@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+	<meta charset="UTF-8">
+	<title>word-break</title>
+</head>
+<body>
+	<style type="text/css">
+		* {
+			margin: 0;
+			padding: 0;
+		}
+		.container {
+			width: 250px;
+			height: 250px;
+			background-color: #dedede;
+			margin-left: 25px;
+			margin-top: 15px;
+		}
+		p {
+			margin-left: 25px;
+			margin-top: 25px;
+			color: #ff0000;
+		}
+	</style>
+	<p>word-break: normal</p>
+	<div class="container container1">
+		My name is Perez, I'm from China
+		dddddddddddddddddddddddddddddddddddddddddddddddd.
+		我叫袁子岷，我来自中国啊啊啊啊啊啊啊啊啊啊啊啊啊
+	</div>
+	<p>word-break: break-all</p>
+	<div class="container container2">
+		My name is Perez, I'm from China
+		dddddddddddddddddddddddddddddddddddddddddddddddd.
+		我叫袁子岷，我来自中国啊啊啊啊啊啊啊啊啊啊啊啊啊
+	</div>
+	<p>word-break: keep-all</p>
+	<div class="container container3">
+		My name is Perez, I'm from China
+		dddddddddddddddddddddddddddddddddddddddddddddddd.
+		我叫袁子岷，我来自中国啊啊啊啊啊啊啊啊啊啊啊啊啊
+	</div>
+</body>
+</html>
