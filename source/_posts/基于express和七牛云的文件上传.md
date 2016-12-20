@@ -454,6 +454,9 @@ router.post('/upload', multipartMiddleware, function(req, res, next) {
 
 {% img /img/20161219-6.png 800 322 上传图片 %}
 
+源码地址
+
+{% img /img/zip.png 32 32 上传图片 %} [源码](http://www.yzmspirit.com/code/app.zip "源码")
 
 ### 扩展阅读 ###
 利用node.js的fs模块操作文件，删除temp目录下的文件
