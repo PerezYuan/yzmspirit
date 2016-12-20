@@ -1,6 +1,9 @@
 ---
 title: vue2.0+webpack心路历程
 date: 2016-10-25 19:13:30
+tags:
+- vue
+- 构建工具
 categories: 前端技术
 ---
 

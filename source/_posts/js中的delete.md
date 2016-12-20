@@ -2,9 +2,9 @@
 title: js中的delete
 date: 2016-05-11 16:25:36
 tags:
-- javascript
+- js
 - delete
-categories: javascript
+categories: 前端技术
 ---
 
 在上一次的code review中，发现了一个delete的问题，在写代码的过程中只是随手写了一个delete方法，却是完全不合理的用法。
