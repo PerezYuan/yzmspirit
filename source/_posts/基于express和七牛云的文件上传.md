@@ -390,52 +390,72 @@ $ npm install --save qiniu
 ```javascript
 router.post('/upload', multipartMiddleware, function(req, res, next) {
     console.log(req.files);
-    var qiniu = require("qiniu");
+    const qiniu = require("qiniu");
  
     //需要填写你的 Access Key 和 Secret Key
-    qiniu.conf.ACCESS_KEY = 'Access_Key';
-    qiniu.conf.SECRET_KEY = 'Secret_Key';
+    qiniu.conf.ACCESS_KEY = 'Access Key';
+    qiniu.conf.SECRET_KEY = 'Secret Key';
  
     //要上传的空间
     bucket = 'tinashy';
   
     //构建上传策略函数
     function uptoken(bucket, key) {
-        var putPolicy = new qiniu.rs.PutPolicy(bucket+":"+key);
+        let putPolicy = new qiniu.rs.PutPolicy(bucket+":"+key);
         return putPolicy.token();
     }
   
     //构造上传函数
-    function uploadFile(uptoken, key, localFile) {
-        var extra = new qiniu.io.PutExtra();
+    function uploadFile(uptoken, key, localFile, resolve, reject) {
+        let extra = new qiniu.io.PutExtra();
         qiniu.io.putFile(uptoken, key, localFile, extra, function(err, ret) {
             if(!err) {
                 // 上传成功， 处理返回值
+                resolve(localFile);
                 console.log(ret.hash, ret.key, ret.persistentId);
-                res.json({ code : 1 });   
             } else {
                 // 上传失败， 处理返回代码
-                console.log(err);
-                res.json({ code : 0, msg : '上传失败' });
+                reject(err);
             }
         });
     }
  
+    // 构造Promise数组
+    let promiseArr = [];
     for (index in req.files) {
-        //上传到七牛后保存的文件名
-        key = req.files[index].originalFilename;
-        //生成上传 Token
-        token = uptoken(bucket, key);
-  
-        //要上传文件的本地路径
-        filePath = req.files[index].path;
- 
-        //调用uploadFile上传
-        uploadFile(token, key, filePath);
+        let p = new Promise((resolve, reject) => {
+            //上传到七牛后保存的文件名
+            key = req.files[index].originalFilename;
+            //生成上传 Token
+            token = uptoken(bucket, key);
+      
+            //要上传文件的本地路径
+            filePath = req.files[index].path;
+     
+            //调用uploadFile上传
+            uploadFile(token, key, filePath, resolve, reject);
+        })
+
+        promiseArr.push(p);
     }
+    // 所有异步执行完成之后返回成功
+    let pAll = Promise.all(promiseArr);
+    pAll.then((localFile) => {
+        console.log(localFile);
+        res.json({code: 1})
+    }, (err) => {
+        console.log(err);
+        res.json({code: 0, msg: '上传失败'});
+    })
 });
 ```
 
-下面就可以看到我刚刚上传的f.jpg文件了，就基本大功告成了！！
+下面我们再去上传一次图片，就可以看到我刚刚上传的f.jpg文件了，基本大功告成了！！
 
 {% img /img/20161219-6.png 800 322 上传图片 %}
+
+
+### 扩展阅读 ###
+利用node.js的fs模块操作文件，删除temp目录下的文件
+
+Promise学习
