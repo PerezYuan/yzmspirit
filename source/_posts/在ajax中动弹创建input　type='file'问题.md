@@ -63,6 +63,6 @@ demo：[demo](https://jsfiddle.net/perezyuan/16jtcpo2/6/ "demo")
 ----------
 结论：
 1. 简单的来看，只用加上一行`async: false`即可解决问题。
-2. 为什么改变同步异步方式能打开选择文件框呢，这是w3c的一个安全原因，异步的请求是`untrusted events`，在`<input type="file">`这个元素中会阻止浏览器进行下一步的操作，stackoverflow的回答中已经讲得非常清楚了。
+2. 为什么改变同步异步方式能打开选择文件框呢，这是w3c的一个安全原因，异步的请求是`untrusted events`，在`<input type="file">`这个元素中会阻止浏览器进行下一步的操作，而改为同步方式，可以理解为是用户的`click`事件触发了`input`元素的后一步操作，stackoverflow的回答中已经讲得非常清楚了。
 3. 这种交互不是推荐的交互，最好是在最先就做好权限验证而不是到最后一步上传文件了再去做验证。
 > [trusted-events](https://www.w3.org/TR/2012/WD-DOM-Level-3-Events-20120614/#trusted-events "trusted-events")：Most untrusted events should not trigger default actions, with the exception of click or DOMActivate events
