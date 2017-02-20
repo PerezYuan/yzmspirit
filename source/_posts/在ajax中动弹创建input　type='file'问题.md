@@ -2,7 +2,8 @@
 title: 在ajax中动态创建input type='file'问题
 date: 2017-1-17 15:41:28
 tags:
-- javascript
+- js
+- ajax
 categories: 前端技术
 ---
 

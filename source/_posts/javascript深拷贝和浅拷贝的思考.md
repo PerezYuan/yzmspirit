@@ -2,7 +2,7 @@
 title: javascript深拷贝和浅拷贝的思考
 date: 2016-05-16 14:51:20
 tags:
-- javascript
+- js
 - 拷贝
 categories: 前端技术
 ---
