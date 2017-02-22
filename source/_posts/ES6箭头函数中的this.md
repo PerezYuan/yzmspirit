@@ -1,6 +1,6 @@
 ---
 title: 进击的ES6箭头函数和this
-date: 2017-2-23 22:37:16
+date: 2017-2-15 22:37:16
 tags:
 - js
 - this
@@ -134,7 +134,7 @@ var foo = () => {
         };
     };
 }
-
+ 
 foo.call( { a: "inner" } )()()(); // outer
 ```
 
