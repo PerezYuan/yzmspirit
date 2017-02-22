@@ -139,3 +139,21 @@ foo.call( { a: "inner" } )()()(); // outer
 ```
 
 如果你认为有4次（一次全局，3次return），那么结果是否定的，其实只有一次全局的this绑定，当到`console`代码段的时候，其实根本就没有执行新的`this`绑定，而是按照词法作用域向上查找，找到了全局中`this = window`的绑定，所以`this.a`才会打印`outer`。
+
+那么再来解释最初的例子。
+```javascript
+var a = "outer";
+function fn() {
+    return () => {
+        console.log(this.a);
+    }
+}
+ 
+var obj = {
+    a: "inner",
+    say: fn
+}
+ 
+obj.say()(); // inner
+```
+其实箭头函数中的`this`也是向上查找，找到了`fn()`函数的`this`之后就直接返回了，而此时的`fn()`函数是被`obj`所invoke得，固然`this.a`就打印了`inner`。
