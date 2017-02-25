@@ -8,7 +8,7 @@ tags:
 categories: 前端技术
 ---
 
-关于函数与`this`之间的关系，已经在上一篇博客中简单讲解了，欢迎戳{% link 函数与this http://www.yzmspirit.com/2017/02/12/this%E4%B8%8E%E5%87%BD%E6%95%B0/ true 函数与this%}，接下来我们要来细细看一下ES6中的箭头函数还有它所带来的`this`问题。
+关于函数与`this`之间的关系，已经在上一篇博客中简单讲解了，欢迎戳{% link 函数与this http://www.yzmspirit.com/2017/02/12/%E5%87%BD%E6%95%B0%E4%B8%8Ethis/ true 函数与this%}，接下来我们要来细细看一下ES6中的箭头函数还有它所带来的`this`问题。
 
 <!-- more -->
 
