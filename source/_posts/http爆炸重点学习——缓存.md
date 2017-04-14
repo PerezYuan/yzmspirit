@@ -92,8 +92,8 @@ categories: 前端技术
 
 | cache-directive | 描述 |
 | --------------------- |:-------------------:| 
-| must-revalidate | 缓存请求的资源，该资源在second时间后缓存过期，通常单位为秒 |
-| public | 资源被缓存，但是立即失效，所有用户必须发送验证信息到服务器验证资源是否过期（协商） |
-| private | 缓存不存储任何关于请求和响应的资源信息 |
-| proxy-revalidate | |
-| s-maxage=seconds | |
+| must-revalidate | 缓存使用之前必须去验证新鲜度（协商），失败返回504（Gateway Timeout） |
+| proxy-revalidate | 同上，适用于代理服务器 |
+| public | 表明响应可以被任何对象（包括：发送请求的客户端，代理服务器，等等）缓存 |
+| private | 表明响应只能被单个用户缓存（浏览器），不能作为共享缓存（即代理服务器不能缓存它） |
+| s-maxage=seconds | 原理同max-age，适用于共享缓存（代理等），在共享缓存设置中会覆盖max-age和老一代Expires头 |
