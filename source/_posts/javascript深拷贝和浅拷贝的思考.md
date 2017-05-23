@@ -65,13 +65,13 @@ jQuery的`$.extend()`可以将多个对象合并并返回合并后的对象，�
 		        }
 		    }
 		}
-
+ 
 		var people2 = $.extend({},people);
 		var people3 = $.extend(true,{},people);
-
+		 
 		people.friends.people.name = 'butsaltme';
 		console.log(people2.friends.people.name); //butsaltme
-		
+		 
 		console.log(people.friends.people === people2.friends.people);  //true
 		console.log(people.friends.people === people3.friends.people);  //false
 ```

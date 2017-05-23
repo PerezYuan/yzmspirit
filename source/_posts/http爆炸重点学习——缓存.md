@@ -61,7 +61,7 @@ categories: 前端技术
 | key | 描述 |
 | ------------- |:-------------:| 
 | Cache-Control | http1.1规则，优先级最高，可设置一系列缓存的机制 |
-| Pragma | http1.0字段，指定缓存的方式，通常以no-cache出现 |
+| Pragma | http1.0字段，指定缓存的方式，以no-cache出现 |
 | Expires | http1.0字段，设定缓存的过期时间 |
 
 
@@ -100,11 +100,82 @@ categories: 前端技术
 
 介绍跟时间设置相关的场景，假如一个资源在1月1日进行了缓存，当前的缓存周期是10天，即在1月10日资源会被再次验证新鲜度，那么我在1月1日有几种设计缓存的方案。
 
-* Cache-Control: max-age=432000（5 * 24 * 3600 = 5day） 
+* Cache-Control: max-age=432000（5 x 24 x 3600 = 5day） 
 该情况下，缓存周期为5天，缓存资源将在1月5日过期，无特殊情况下5天内都会去请求浏览器缓存的资源，而不会向服务器发送验证请求，原来的缓存周期会被覆盖。
-* Cache-Control: max-stale =432000（5 * 24 * 3600 = 5day）
+* Cache-Control: max-stale =432000（5 x 24 x 3600 = 5day）
 这种情况下，允许在缓存资源失效后5天内都可访问，即缓存资源会在1月15日过期。
-* Cache-Control: min-fresh =86400（1 * 24 * 3600 = 1day）
+* Cache-Control: min-fresh =86400（1 x 24 x 3600 = 1day）
 这种情况下，缓存资源必须保留一天的新鲜度，即在1月9日就会去向服务器发送资源新鲜度验证请求。
 
 > 当三种策略同时作用的时候，以最保守的情况做为依据，上述例子中，1月5日之后就会向服务器验证资源新鲜度了。在验证的策略后面会慢慢讲到。
+
+扩展阅读：[What's the difference between Cache-Control: max-age=0 and no-cache?](http://stackoverflow.com/questions/1046966/whats-the-difference-between-cache-control-max-age-0-and-no-cache)
+
+## 2）Pragma
+在http 1.0时代，Pragma就是用来定义缓存策略的，在[RFC](https://tools.ietf.org/html/rfc7234#section-5.4)文档中，Pragma就只有一个值`no-cache`，会使得浏览器不对资源进行缓存而直接向服务器发送请求。功能和`Cache-Control: no-cache`一样，但是有时会为了做http协议的向下兼容，通常都会写上`Pragma`或者`Expires`字段。
+
+## 3）Expires
+既然`Pragma`能关闭缓存功能，自然需要一个首部来开启缓存功能并定制缓存策略，`Expires`在http1.0中就扮演这个角色。
+
+Expires的值对应一个GMT（格林尼治时间），比如“Mon, 23 Mar 2017 11:14:08 GMT”来告诉浏览器资源缓存过期时间，在这个时间之前都会先去浏览器缓存中获取。
+
+# 3.协商缓存
+关于浏览器缓存的http首部，主要还是决定了客户端是否向服务器端发送请求，比如`no-cache`就会阻止浏览器的请求发送，或者说在`max-age`的可用时间内。下面我们要讨论的是，如果客户端确确实实发送了请求到服务器端，那么是否一定意味着我们会完整地去获取一个资源呢。
+
+答案是否定的，在http1.1中，有一些首部做着一些新鲜度检测的工作。设想一下如果客户端发送了请求想要获取一个很大的资源，而这个资源可能在服务器端并位修改过，如果我们还是去重新获取一便，是否浪费了带宽呢？于是就有了协商缓存的概念。
+
+协商缓存相关的首部字段一般成对出现：
+
+## 1）Last-Modified/If-Modified-Since
+格式均为GMT(格林尼治标准时间) ：星期 日期 月份 年份 时:分:秒
+
+具体过程如下：
+- 1.浏览器第一次请求一个资源后，会得到资源的内容的同时，在response的首部加上一个Last-Modified，并且标记上这个资源在服务器上最后修改的时间。
+- 2.当再一次请求该资源，浏览器不能命中强缓存的时候，客户端会在请求首部带上If-Modified-Since，值即为上次Last-Modified记录的值，用于判断该资源在该时间时候是否在服务器上有修改。
+- 3.**如果没有修改**，则命中协商缓存，返回304（Not Modified），但是不会返回资源内容，浏览器会从缓存中去加载这个资源，response的首部中不会再添加Last-Modified，仍是上一次请求存下的值，在下一次请求该资源的时候还是会继续带上相同的Last-Modified首部。
+- 4.**如果资源修改了**，即没有命中协商缓存，则是返回200（OK），跟步骤1一样，会在response中返回一个带有新值的Last-Modified首部，这个值即为服务器最新修改的时间。
+
+> If-Unmodified-Since 缓存校验字段, 语法同上. 表示资源未修改则正常执行更新, 否则返回412(Precondition Failed)状态码的响应. 常用于如下两种场景:
+
+> * 不安全的请求, 比如说使用post请求更新wiki文档, 文档未修改时才执行更新.
+> * 与 If-Range 字段同时使用时, 可以用来保证新的片段请求来自一个未修改的文档.
+
+## 2）Etag/If-None-Match
+格式： `ETag:"2c1-4a6473f6030c0"`
+
+通过某种算法（比如md5），给资源计算出一个唯一标识，和Last-Modified一样，会在response中返回Etag值，标记当前状态的资源。客户端保留Etag标识，并在下一次请求首部中通过If-None-Match去匹配，匹配结果和行为与If-Modified-Since类似，如果修改过，则返回新的标识，状态200（OK），没有则304（Not Modified）。
+
+> If-Match 缓存校验字段, 其值为上次收到的Etag值. 常用于判断条件是否满足, 如下两种场景:
+
+> * 对于 GET 或 HEAD 请求, 结合 Range 头字段, 它可以保证新范围的请求和前一个来自相同的源, 如果不匹配, 服务器将返回一个416(Range Not Satisfiable)状态码的响应.
+> * 对于 PUT 或者其他不安全的请求, If-Match 可用于阻止错误的更新操作, 如果不匹配, 服务器将返回一个412(Precondition Failed)状态码的响应.
+
+
+关于If-Unmodified-Since和If-Match没有试验过，参考了[浏览器缓存机制剖析](https://juejin.im/post/58eacff90ce4630058668257)。
+
+## 3）为什么有了Last-Modified/If-Modified-Since还需要Etag/If-None-Match呢？
+在绝大多数场景下使用Last-Modified已经足够我们去检测一个资源的新鲜度了，那么为什么还需要Etag呢？而且在Last-Modified与ETag一起使用的时候，服务器会优先验证ETag，在Etag满足一致的情况下，才会继续去验证Last-Modified，来决定是返回304还是200.
+
+其实主要是为了解决如下几个问题：
+
+1. 一些资源文件会周期性的更改，但是内容并不会变，仅仅只改变了其修改时间，这个时候我们并不希望客户端每次都从服务器获取新鲜的资源，而Etag的计算则会保持一致；
+
+2. 某些文件修改非常频繁，GMT时间单位只能精确到秒级，这种文件的验证会出现问题；
+
+3. 某些服务器对文件的计算时间不够精确，存在偏差；
+
+这个时候我们使用Etag就能更加准确地标记一个资源在某个时间的状态从而更加精确的去控制缓存。
+
+# 4.其他
+当我们在chrome 58.0 场景下打开开发者工具的时候，在刷新处右键可以看到如下一张图。
+{% img /img/20170328_5.png 256 81 浏览器的一些行为 %}
+
+- windows下Ctrl(Mac OS下的command) + R或者F5，即为正常的刷新行为，强缓存和协商缓存都会去验证。
+- Ctrl + shift + R或者Ctrl + F5或者在devtool的Network中disable cache都会在请求首部加上`Cache-Control: no-cache`和`Pragma: no-cache`首部，并且清除掉`Etag`和`Last-Modified`首部，从而达到硬性重新加载的效果，即跳过缓存验证。
+- 最后一项则会在上一项的基础上把在内存或者磁盘的缓存全部给清除掉。
+
+# 5.参考资料
+[浏览器缓存机制剖析](https://juejin.im/post/58eacff90ce4630058668257)
+[RFC 7234 HTTP/1.1 Caching](https://tools.ietf.org/html/rfc7234#section-5.4)
+[http协商缓存VS强缓存](http://www.cnblogs.com/wonyun/p/5524617.html)
+[Cache-Control - HTTP | MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control)
