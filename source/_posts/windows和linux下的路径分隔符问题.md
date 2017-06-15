@@ -20,7 +20,7 @@ Windows：
 
 Linux：
 
-{% img /img/20170614_2.png 440 60 windows %}
+{% img /img/20170614_2.png 460 59 windows %}
 
 > 路径分隔采用 “ / ” 来分隔路径，如上图 **~/workspace/github**
 
