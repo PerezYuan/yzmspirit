@@ -20,7 +20,7 @@
 <meta property="og:image" content="https://tinashy-1256534403.cos.ap-chengdu.myqcloud.com/TLS%E7%9A%84%E5%B7%A5%E4%BD%9C%E6%9C%BA%E5%88%B6.png">
 <meta property="og:image" content="https://tinashy-1256534403.cos.ap-chengdu.myqcloud.com/%E6%95%B0%E5%AD%97%E7%AD%BE%E5%90%8D.png">
 <meta property="og:image" content="https://tinashy-1256534403.cos.ap-chengdu.myqcloud.com/%E6%95%B0%E5%AD%97%E8%AF%81%E4%B9%A6.png">
-<meta property="og:updated_time" content="2019-07-08T03:12:15.165Z">
+<meta property="og:updated_time" content="2019-07-08T03:19:24.926Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="HTTPS应用&amp;TLS握手机制">
 <meta name="twitter:description" content="HTTPS，顾名思义，就是HTTP+S，而这个S是什么呢，它在HTTP的基础上有了什么变化，为什么需要HTTPS呢，就是本篇要讨论的东西了">
@@ -243,9 +243,11 @@
 </li>
 </ul>
 <p><img src="https://tinashy-1256534403.cos.ap-chengdu.myqcloud.com/%E6%95%B0%E5%AD%97%E7%AD%BE%E5%90%8D.png" alt="数字签名的工作图解"></p>
-<pre><code>1. 摘要（单向散列函数获取消息的散列值）和消息，一起用接收者的公钥加密后，发送
-2. 接收者用自己的私钥解密，计算消息的摘要（用同样的单向散列函数），和正文消息比对有无被篡改
-</code></pre><p><span id="da"></span> </p>
+<ol>
+<li>摘要（单向散列函数获取消息的散列值）和消息，一起用接收者的公钥加密后，发送</li>
+<li>接收者用自己的私钥解密，计算消息的摘要（用同样的单向散列函数），和正文消息比对有无被篡改</li>
+</ol>
+<p><span id="da"></span> </p>
 <h3 id="2-数字证书"><a href="#2-数字证书" class="headerlink" title="2. 数字证书"></a>2. 数字证书</h3><p>&ensp;&ensp;要了解数字证书，首先得了解<a href="#ds">数字签名</a></p>
 <ul>
 <li><p>数字证书的作用<br>&ensp;&ensp;验证发送者的身份和发送者的公钥可靠性</p>
@@ -254,11 +256,13 @@
 </li>
 </ul>
 <p><img src="https://tinashy-1256534403.cos.ap-chengdu.myqcloud.com/%E6%95%B0%E5%AD%97%E8%AF%81%E4%B9%A6.png" alt="数字证书的工作图解"></p>
-<pre><code>1. 申请者把公钥和申请信息一起发送给CA
-2. CA验证申请信息后提取申请者公钥和信息的摘要，用私钥加密摘要，形成CA的数字签名附在申请者公钥和信息的后面，就产生了数字证书，返回给申请者
-3. 申请者用CA的公钥解密数字证书，用同样的方式摘要信息，和解密信息对比，无误后此证书可用
-4. 申请者发送信息时，把数字证书附在后面一起发送给对方，对方利用缓存的CA根证书找到解密这个证书的数字签名，验证成功后得到发送者的公钥和申请信息，浏览器检查申请信息公司名字正常也没过期没问题，那么就证实了发送者的公钥没有问题，确实是可用的公钥，你用公钥解密对方的信息，成功解密就说明对方的身份正常，你就可以与他交互了，其实就是认证文件和公钥确实出于对方
-</code></pre><p><span id="sa"></span></p>
+<ol>
+<li>申请者把公钥和申请信息一起发送给CA</li>
+<li>CA验证申请信息后提取申请者公钥和信息的摘要，用私钥加密摘要，形成CA的数字签名附在申请者公钥和信息的后面，就产生了数字证书，返回给申请者</li>
+<li>申请者用CA的公钥解密数字证书，用同样的方式摘要信息，和解密信息对比，无误后此证书可用</li>
+<li>申请者发送信息时，把数字证书附在后面一起发送给对方，对方利用缓存的CA根证书找到解密这个证书的数字签名，验证成功后得到发送者的公钥和申请信息，浏览器检查申请信息公司名字正常也没过期没问题，那么就证实了发送者的公钥没有问题，确实是可用的公钥，你用公钥解密对方的信息，成功解密就说明对方的身份正常，你就可以与他交互了，其实就是认证文件和公钥确实出于对方</li>
+</ol>
+<p><span id="sa"></span></p>
 <h3 id="3-加密算法"><a href="#3-加密算法" class="headerlink" title="3. 加密算法"></a>3. 加密算法</h3><ul>
 <li><p>非对称加密RSA  </p>
 <ol>
@@ -294,25 +298,48 @@
 <p>&ensp;&ensp;MD5一般都用来加密用户密码</p>
 <blockquote>
 <p>补充整理：HTTP的三次握手和四次挥手</p>
+</blockquote>
 <ul>
-<li>三次握手  <ol>
+<li><p>三次握手  </p>
+<ol>
 <li>client发送TCP头带SYN=1标志的数据包给server，带随机产生的序列号seq1，请求建立连接</li>
+<li><p>server接收后，发送TCP头带SYN=1，ACK=seq1+1，标志的数据包，带随机产生的序列号seq2，给client</p>
+<pre style="color: #fff">
+ 验证client发送正常，server接受正常
+</pre>
+</li>
+<li><p>client接收ACK后，发送TCP头带ACK=seq2+1标志的数据包给client</p>
+<pre style="color: #fff">
+验证client接收正常，server发送正常
+</pre>
+
+</li>
 </ol>
 </li>
 </ul>
-</blockquote>
-<pre><code>2. server接收后，发送TCP头带SYN=1，ACK=seq1+1，标志的数据包，带随机产生的序列号seq2，给client
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">验证client发送正常，server接受正常</span><br></pre></td></tr></table></figure>
-
-3. client接收ACK后，发送TCP头带ACK=seq2+1标志的数据包给client
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">    验证client接收正常，server发送正常</span><br><span class="line">    ```  </span><br><span class="line">SYN=1代表请求建立连接，ACK代表确认收到的数据包序号+1  </span><br><span class="line"></span><br><span class="line">至此，三次握手才能验证client和server的发送接收都正常，接下来才可以开始正常的通信了</span><br><span class="line"></span><br><span class="line">* 四次挥手  </span><br><span class="line">    1. client发送TCP头带FIN=1标志的数据包给server，带随机产生的序列号seq3，单方面请求关闭client对server的连接</span><br><span class="line">    </span><br><span class="line">    2. server接收后，发送TCP头带ACK=seq3+1标志的数据包，给client</span><br></pre></td></tr></table></figure>
-
+<p>SYN=1代表请求建立连接，ACK代表确认收到的数据包序号+1  </p>
+<p>至此，三次握手才能验证client和server的发送接收都正常，接下来才可以开始正常的通信了</p>
+<ul>
+<li><p>四次挥手  </p>
+<ol>
+<li><p>client发送TCP头带FIN=1标志的数据包给server，带随机产生的序列号seq3，单方面请求关闭client对server的连接</p>
+</li>
+<li><p>server接收后，发送TCP头带ACK=seq3+1标志的数据包，给client</p>
+<pre style="color: #fff">
 server确认client对server的话说完了，允许client关闭l，但是server对client的话还没说完，server单工发送给client，这种状态叫半关闭状态
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">3. server发送TCP头带FIN=1标志的数据包给client，带随机产生的序列号seq4，请求关闭server对client连接</span><br><span class="line"></span><br><span class="line">4. client接收后，发送TCP头带ACK=seq4+1标志的数据包，给server</span><br></pre></td></tr></table></figure>
-
+</pre></li>
+<li><p>server发送TCP头带FIN=1标志的数据包给client，带随机产生的序列号seq4，请求关闭server对client连接</p>
+</li>
+<li><p>client接收后，发送TCP头带ACK=seq4+1标志的数据包，给server  </p>
+<pre style="color: #fff">
 client确认server对client的话说完了，允许server关闭，双方都关闭了，就是全关闭状态
-```
-</code></pre><p>FIN=1代表请求关闭连接，ACK代表确认收到的数据包序号+1  </p>
+</pre>
+
+</li>
+</ol>
+</li>
+</ul>
+<p>FIN=1代表请求关闭连接，ACK代表确认收到的数据包序号+1  </p>
 <p>至此，四次挥手才是双方都关闭了连接</p>
 <blockquote>
 <p>参考 </p>
