@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="dns-prefetch" href="http://blog.fens.me">
+  <title>http爆炸重点学习——缓存 | Spirit</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="忙碌的三月，迟来的总结，今天写写http协议一个非常重要的点——缓存的处理。">
+<meta name="keywords" content="http">
+<meta property="og:type" content="article">
+<meta property="og:title" content="http爆炸重点学习——缓存">
+<meta property="og:url" content="http://blog.fens.me/2017/03/28/http爆炸重点学习——缓存/index.html">
+<meta property="og:site_name" content="Spirit">
+<meta property="og:description" content="忙碌的三月，迟来的总结，今天写写http协议一个非常重要的点——缓存的处理。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://blog.fens.me/img/20170328.png">
+<meta property="og:image" content="http://blog.fens.me/img/20170328_1.png">
+<meta property="og:image" content="http://blog.fens.me/img/20170328_4.png">
+<meta property="og:image" content="http://blog.fens.me/img/20170328_2.png">
+<meta property="og:image" content="http://blog.fens.me/img/20170328_3.png">
+<meta property="og:image" content="http://blog.fens.me/img/20170328_5.png">
+<meta property="og:updated_time" content="2019-07-07T13:07:25.202Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="http爆炸重点学习——缓存">
+<meta name="twitter:description" content="忙碌的三月，迟来的总结，今天写写http协议一个非常重要的点——缓存的处理。">
+<meta name="twitter:image" content="http://blog.fens.me/img/20170328.png">
+  
+    <link rel="alternative" href="/atom.xml" title="Spirit" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="stylesheet" href="/main.css">
+  
+
+</head>
+</html>
+<body>
+  <div id="container">
+    <div class="left-col">
+      <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img src="/author.jpg" class="js-avatar">
+			
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">PerezYuan</a></h1>
+		</hgroup>
+
+		
+		<p class="header-subtitle">元気を出して大いにやる</p>
+		
+
+		<nav class="header-menu">
+			<ul>
+			
+				<li><a href="http://www.yzmspirit.com/">主页</a></li>
+	        
+			</ul>
+		</nav>
+		<nav class="header-smart-menu">
+	        
+    		
+    			
+    			<a class="js-smart-menu" data-idx="0" href="javascript:void(0)">所有文章</a>
+    			
+    			
+            
+    			
+    			<a class="js-smart-menu" data-idx="1" href="javascript:void(0)">标签</a>
+    			
+    			
+            
+    			
+    			<a class="js-smart-menu" data-idx="2" href="javascript:void(0)">友链</a>
+    			
+    			
+            
+    			
+    			<a class="js-smart-menu" data-idx="3" href="javascript:void(0)">关于我</a>
+    			
+    			
+            
+		</nav>
+		<nav class="header-nav">
+			<div class="social">
+				
+					<a class="github" target="_blank" href="https://github.com/PerezYuan" title="github">github</a>
+		        
+					<a class="weibo" target="_blank" href="http://weibo.com/u/2193947000" title="weibo">weibo</a>
+		        
+			</div>
+		</nav>
+	</header>		
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"><i class="icon-list"></i></div>
+  		<h1 class="header-author js-mobile-header hide">PerezYuan</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+				
+					<img src="/author.jpg" class="js-avatar">
+				
+			</div>
+			<hgroup>
+			  <h1 class="header-author">PerezYuan</h1>
+			</hgroup>
+			
+			<p class="header-subtitle">元気を出して大いにやる</p>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="http://www.yzmspirit.com/">主页</a></li>
+		        
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/PerezYuan" title="github">github</a>
+			        
+						<a class="weibo" target="_blank" href="http://weibo.com/u/2193947000" title="weibo">weibo</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+
+      <div class="body-wrap">
+        <article id="post-http爆炸重点学习——缓存" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      http爆炸重点学习——缓存
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>忙碌的三月，迟来的总结，今天写写http协议一个非常重要的点——缓存的处理。</p>
+<a id="more"></a>
+<blockquote>
+<p>缓存的作用是不言而喻的，它是web中各个方面性能优化的利器，关于http中的缓存，权威指南中的介绍非常直观：</p>
+</blockquote>
+<blockquote>
+<ul>
+<li>缓存减少了冗余的数据传输，节省了你的网络费用。</li>
+</ul>
+</blockquote>
+<blockquote>
+<ul>
+<li>缓存缓解了网络瓶颈的问题。不需要更多的带宽就能够更快地加载页面。</li>
+</ul>
+</blockquote>
+<blockquote>
+<ul>
+<li>缓存降低了对原始服务器的要求。服务器可以更快地响应，避免过载的出现。</li>
+</ul>
+</blockquote>
+<blockquote>
+<ul>
+<li>缓存降低了距离时延，因为从较远的地方加载页面会更慢一些。</li>
+</ul>
+</blockquote>
+<p>其中也有一个最基本的概念：</p>
+<blockquote>
+<p>可以用已有的副本为某些到达缓存的请求提供服务。这被称为缓存命中（cache hit），其他一些到达缓存的请求可能会由于没有副本可用，而被转发给原始服务器。这被称为缓存未命中（cache miss）。</p>
+</blockquote>
+<h1 id="1-一图流"><a href="#1-一图流" class="headerlink" title="1.一图流"></a>1.一图流</h1><img src="/img/20170328.png" width="926" height="604" title="一图流">
+<p>上图中涉及到一些http首部字段，后面会慢慢讲到，首先我们可以把上图拆分成3种最简单的逻辑来分析。</p>
+<h2 id="1-缓存未命中"><a href="#1-缓存未命中" class="headerlink" title="1) 缓存未命中"></a>1) 缓存未命中</h2><p>分两种情况：</p>
+<ul>
+<li>缓存必须要在浏览器访问过一次资源后才会产生，所以最简单的情况是第一次请求资源，直接从服务器上成功获取到资源，并设置一系列缓存相关的http头信息，如下图。</li>
+</ul>
+<img src="/img/20170328_1.png" width="662" height="274" title="缓存未命中">
+<ul>
+<li>再次访问通过http首部字段验证不满足使用缓存的条件，如下图。</li>
+</ul>
+<img src="/img/20170328_4.png" width="662" height="274" title="缓存未命中">
+<h2 id="2-缓存命中"><a href="#2-缓存命中" class="headerlink" title="2) 缓存命中"></a>2) 缓存命中</h2><ul>
+<li>缓存直接命中，这种情况也叫浏览器缓存命中（强缓存命中），这种直接返回状态码200（from cache）</li>
+</ul>
+<img src="/img/20170328_2.png" width="662" height="274" title="缓存命中">
+<h2 id="3-缓存再验证命中"><a href="#3-缓存再验证命中" class="headerlink" title="3) 缓存再验证命中"></a>3) 缓存再验证命中</h2><ul>
+<li>缓存再验证命中，这种也叫做协商缓存命中，在强缓存验证不通过的情况下，会像服务器端发送一个协商缓存验证的信息，如果此时服务器发现请求资源未修改，则返回状态码304（Not Modified）告知服务器从缓存中获取资源并更新协商缓存信息。这种情况通缓存未命中的第二种情况相对应。</li>
+</ul>
+<img src="/img/20170328_3.png" width="662" height="274" title="缓存再验证命中">
+<h1 id="2-浏览器缓存（强缓存）"><a href="#2-浏览器缓存（强缓存）" class="headerlink" title="2.浏览器缓存（强缓存）"></a>2.浏览器缓存（强缓存）</h1><p>下满我们来仔细讨论下http协议中缓存的机制，它是怎样通过一些首部信息来实现调用缓存的。从图中我们可以简单分析得出缓存包含两种类型，这两种类型我们叫做浏览器缓存（强缓存）和协商缓存，我们先讨论第一种缓存。</p>
+<p>强缓存相关的首部字段：</p>
+<table>
+<thead>
+<tr>
+<th>key</th>
+<th style="text-align:center">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cache-Control</td>
+<td style="text-align:center">http1.1规则，优先级最高，可设置一系列缓存的机制</td>
+</tr>
+<tr>
+<td>Pragma</td>
+<td style="text-align:center">http1.0字段，指定缓存的方式，以no-cache出现</td>
+</tr>
+<tr>
+<td>Expires</td>
+<td style="text-align:center">http1.0字段，设定缓存的过期时间</td>
+</tr>
+</tbody>
+</table>
+<h2 id="1）Cache-Control"><a href="#1）Cache-Control" class="headerlink" title="1）Cache-Control"></a>1）Cache-Control</h2><p>这个首部是缓存控制中最重要也是最常见的字段，它不仅可以设置缓存如何存储，同时也能告诉浏览器什么时候使用缓存，这个首部也是一个通用首部字段，在请求报文和响应报文都可以使用到，缓存指令是单向的, 这意味着在请求里设置的指令，在响应中不用包含相同的指令。</p>
+<p><strong>Cache-Control</strong>的语法为：<code>Cache-Control: cache-directive</code>。</p>
+<ul>
+<li>在请求和响应都可能出现的指令：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>cache-directive</th>
+<th style="text-align:center">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>max-age=[seconds]</td>
+<td style="text-align:center">缓存请求的资源，该资源在second时间后缓存过期，单位为秒</td>
+</tr>
+<tr>
+<td>no-cache</td>
+<td style="text-align:center">资源被缓存，但是立即失效，所有用户必须发送验证信息到服务器验证资源是否过期（协商）</td>
+</tr>
+<tr>
+<td>no-store</td>
+<td style="text-align:center">缓存不存储任何关于请求和响应的资源信息</td>
+</tr>
+<tr>
+<td>no-transform</td>
+<td style="text-align:center">针对代理服务器，<br>让代理服务器不能对资源进行包括<code>Content-Encoding</code><br><code>Content-Range</code><br><code>Content-Type</code>header的修改，比如将图片资源的格式修改以便于压缩资源大小<br>的操作都会被这条指令阻止</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>只在请求中出现的指令：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>cache-directive</th>
+<th style="text-align:center">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>max-stale[=seconds]</td>
+<td style="text-align:center">可以使用已经失效的缓存，可设置时间控制在缓存失效之后second时间内仍然可以使用缓存</td>
+</tr>
+<tr>
+<td>min-fresh[=seconds]</td>
+<td style="text-align:center">客户端希望获取到的资源至少有seconds的新鲜期</td>
+</tr>
+<tr>
+<td>only-if-cached</td>
+<td style="text-align:center">如果有缓存就返回缓存，不和服务器交互，无缓存返回504（Gateway Timeout）</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>只在响应中出现的指令：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>cache-directive</th>
+<th style="text-align:center">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>must-revalidate</td>
+<td style="text-align:center">缓存使用之前必须去验证新鲜度（协商），失败返回504（Gateway Timeout）</td>
+</tr>
+<tr>
+<td>proxy-revalidate</td>
+<td style="text-align:center">同上，适用于代理服务器</td>
+</tr>
+<tr>
+<td>public</td>
+<td style="text-align:center">表明响应可以被任何对象（包括：发送请求的客户端，代理服务器，等等）缓存</td>
+</tr>
+<tr>
+<td>private</td>
+<td style="text-align:center">表明响应只能被单个用户缓存（浏览器），不能作为共享缓存（即代理服务器不能缓存它）</td>
+</tr>
+<tr>
+<td>s-maxage[=seconds]</td>
+<td style="text-align:center">原理同max-age，适用于共享缓存（代理等），在共享缓存设置中会覆盖max-age和老一代Expires头</td>
+</tr>
+</tbody>
+</table>
+<p>介绍跟时间设置相关的场景，假如一个资源在1月1日进行了缓存，当前的缓存周期是10天，即在1月10日资源会被再次验证新鲜度，那么我在1月1日有几种设计缓存的方案。</p>
+<ul>
+<li>Cache-Control: max-age=432000（5 x 24 x 3600 = 5day）<br>该情况下，缓存周期为5天，缓存资源将在1月5日过期，无特殊情况下5天内都会去请求浏览器缓存的资源，而不会向服务器发送验证请求，原来的缓存周期会被覆盖。</li>
+<li>Cache-Control: max-stale =432000（5 x 24 x 3600 = 5day）<br>这种情况下，允许在缓存资源失效后5天内都可访问，即缓存资源会在1月15日过期。</li>
+<li>Cache-Control: min-fresh =86400（1 x 24 x 3600 = 1day）<br>这种情况下，缓存资源必须保留一天的新鲜度，即在1月9日就会去向服务器发送资源新鲜度验证请求。</li>
+</ul>
+<blockquote>
+<p>当三种策略同时作用的时候，以最保守的情况做为依据，上述例子中，1月5日之后就会向服务器验证资源新鲜度了。在验证的策略后面会慢慢讲到。</p>
+</blockquote>
+<p>扩展阅读：<a href="http://stackoverflow.com/questions/1046966/whats-the-difference-between-cache-control-max-age-0-and-no-cache" target="_blank" rel="noopener">What’s the difference between Cache-Control: max-age=0 and no-cache?</a></p>
+<h2 id="2）Pragma"><a href="#2）Pragma" class="headerlink" title="2）Pragma"></a>2）Pragma</h2><p>在http 1.0时代，Pragma就是用来定义缓存策略的，在<a href="https://tools.ietf.org/html/rfc7234#section-5.4" target="_blank" rel="noopener">RFC</a>文档中，Pragma就只有一个值<code>no-cache</code>，会使得浏览器不对资源进行缓存而直接向服务器发送请求。功能和<code>Cache-Control: no-cache</code>一样，但是有时会为了做http协议的向下兼容，通常都会写上<code>Pragma</code>或者<code>Expires</code>字段。</p>
+<h2 id="3）Expires"><a href="#3）Expires" class="headerlink" title="3）Expires"></a>3）Expires</h2><p>既然<code>Pragma</code>能关闭缓存功能，自然需要一个首部来开启缓存功能并定制缓存策略，<code>Expires</code>在http1.0中就扮演这个角色。</p>
+<p>Expires的值对应一个GMT（格林尼治时间），比如“Mon, 23 Mar 2017 11:14:08 GMT”来告诉浏览器资源缓存过期时间，在这个时间之前都会先去浏览器缓存中获取。</p>
+<h1 id="3-协商缓存"><a href="#3-协商缓存" class="headerlink" title="3.协商缓存"></a>3.协商缓存</h1><p>关于浏览器缓存的http首部，主要还是决定了客户端是否向服务器端发送请求，比如<code>no-cache</code>就会阻止浏览器的请求发送，或者说在<code>max-age</code>的可用时间内。下面我们要讨论的是，如果客户端确确实实发送了请求到服务器端，那么是否一定意味着我们会完整地去获取一个资源呢。</p>
+<p>答案是否定的，在http1.1中，有一些首部做着一些新鲜度检测的工作。设想一下如果客户端发送了请求想要获取一个很大的资源，而这个资源可能在服务器端并位修改过，如果我们还是去重新获取一便，是否浪费了带宽呢？于是就有了协商缓存的概念。</p>
+<p>协商缓存相关的首部字段一般成对出现：</p>
+<h2 id="1）Last-Modified-If-Modified-Since"><a href="#1）Last-Modified-If-Modified-Since" class="headerlink" title="1）Last-Modified/If-Modified-Since"></a>1）Last-Modified/If-Modified-Since</h2><p>格式均为GMT(格林尼治标准时间) ：星期 日期 月份 年份 时:分:秒</p>
+<p>具体过程如下：</p>
+<ul>
+<li>1.浏览器第一次请求一个资源后，会得到资源的内容的同时，在response的首部加上一个Last-Modified，并且标记上这个资源在服务器上最后修改的时间。</li>
+<li>2.当再一次请求该资源，浏览器不能命中强缓存的时候，客户端会在请求首部带上If-Modified-Since，值即为上次Last-Modified记录的值，用于判断该资源在该时间时候是否在服务器上有修改。</li>
+<li>3.<strong>如果没有修改</strong>，则命中协商缓存，返回304（Not Modified），但是不会返回资源内容，浏览器会从缓存中去加载这个资源，response的首部中不会再添加Last-Modified，仍是上一次请求存下的值，在下一次请求该资源的时候还是会继续带上相同的Last-Modified首部。</li>
+<li>4.<strong>如果资源修改了</strong>，即没有命中协商缓存，则是返回200（OK），跟步骤1一样，会在response中返回一个带有新值的Last-Modified首部，这个值即为服务器最新修改的时间。</li>
+</ul>
+<blockquote>
+<p>If-Unmodified-Since 缓存校验字段, 语法同上. 表示资源未修改则正常执行更新, 否则返回412(Precondition Failed)状态码的响应. 常用于如下两种场景:</p>
+</blockquote>
+<blockquote>
+<ul>
+<li>不安全的请求, 比如说使用post请求更新wiki文档, 文档未修改时才执行更新.</li>
+<li>与 If-Range 字段同时使用时, 可以用来保证新的片段请求来自一个未修改的文档.</li>
+</ul>
+</blockquote>
+<h2 id="2）Etag-If-None-Match"><a href="#2）Etag-If-None-Match" class="headerlink" title="2）Etag/If-None-Match"></a>2）Etag/If-None-Match</h2><p>格式： <code>ETag:&quot;2c1-4a6473f6030c0&quot;</code></p>
+<p>通过某种算法（比如md5），给资源计算出一个唯一标识，和Last-Modified一样，会在response中返回Etag值，标记当前状态的资源。客户端保留Etag标识，并在下一次请求首部中通过If-None-Match去匹配，匹配结果和行为与If-Modified-Since类似，如果修改过，则返回新的标识，状态200（OK），没有则304（Not Modified）。</p>
+<blockquote>
+<p>If-Match 缓存校验字段, 其值为上次收到的Etag值. 常用于判断条件是否满足, 如下两种场景:</p>
+</blockquote>
+<blockquote>
+<ul>
+<li>对于 GET 或 HEAD 请求, 结合 Range 头字段, 它可以保证新范围的请求和前一个来自相同的源, 如果不匹配, 服务器将返回一个416(Range Not Satisfiable)状态码的响应.</li>
+<li>对于 PUT 或者其他不安全的请求, If-Match 可用于阻止错误的更新操作, 如果不匹配, 服务器将返回一个412(Precondition Failed)状态码的响应.</li>
+</ul>
+</blockquote>
+<p>关于If-Unmodified-Since和If-Match没有试验过，参考了<a href="https://juejin.im/post/58eacff90ce4630058668257" target="_blank" rel="noopener">浏览器缓存机制剖析</a>。</p>
+<h2 id="3）为什么有了Last-Modified-If-Modified-Since还需要Etag-If-None-Match呢？"><a href="#3）为什么有了Last-Modified-If-Modified-Since还需要Etag-If-None-Match呢？" class="headerlink" title="3）为什么有了Last-Modified/If-Modified-Since还需要Etag/If-None-Match呢？"></a>3）为什么有了Last-Modified/If-Modified-Since还需要Etag/If-None-Match呢？</h2><p>在绝大多数场景下使用Last-Modified已经足够我们去检测一个资源的新鲜度了，那么为什么还需要Etag呢？而且在Last-Modified与ETag一起使用的时候，服务器会优先验证ETag，在Etag满足一致的情况下，才会继续去验证Last-Modified，来决定是返回304还是200.</p>
+<p>其实主要是为了解决如下几个问题：</p>
+<ol>
+<li><p>一些资源文件会周期性的更改，但是内容并不会变，仅仅只改变了其修改时间，这个时候我们并不希望客户端每次都从服务器获取新鲜的资源，而Etag的计算则会保持一致；</p>
+</li>
+<li><p>某些文件修改非常频繁，GMT时间单位只能精确到秒级，这种文件的验证会出现问题；</p>
+</li>
+<li><p>某些服务器对文件的计算时间不够精确，存在偏差；</p>
+</li>
+</ol>
+<p>这个时候我们使用Etag就能更加准确地标记一个资源在某个时间的状态从而更加精确的去控制缓存。</p>
+<h1 id="4-其他"><a href="#4-其他" class="headerlink" title="4.其他"></a>4.其他</h1><p>当我们在chrome 58.0 场景下打开开发者工具的时候，在刷新处右键可以看到如下一张图。<br><img src="/img/20170328_5.png" width="256" height="81" title="浏览器的一些行为"></p>
+<ul>
+<li>windows下Ctrl(Mac OS下的command) + R或者F5，即为正常的刷新行为，强缓存和协商缓存都会去验证。</li>
+<li>Ctrl + shift + R或者Ctrl + F5或者在devtool的Network中disable cache都会在请求首部加上<code>Cache-Control: no-cache</code>和<code>Pragma: no-cache</code>首部，并且清除掉<code>Etag</code>和<code>Last-Modified</code>首部，从而达到硬性重新加载的效果，即跳过缓存验证。</li>
+<li>最后一项则会在上一项的基础上把在内存或者磁盘的缓存全部给清除掉。</li>
+</ul>
+<h1 id="5-参考资料"><a href="#5-参考资料" class="headerlink" title="5.参考资料"></a>5.参考资料</h1><p><a href="https://juejin.im/post/58eacff90ce4630058668257" target="_blank" rel="noopener">浏览器缓存机制剖析</a><br><a href="https://tools.ietf.org/html/rfc7234#section-5.4" target="_blank" rel="noopener">RFC 7234 HTTP/1.1 Caching</a><br><a href="http://www.cnblogs.com/wonyun/p/5524617.html" target="_blank" rel="noopener">http协商缓存VS强缓存</a><br><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control" target="_blank" rel="noopener">Cache-Control - HTTP | MDN</a></p>
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      <a href="/2017/03/28/http爆炸重点学习——缓存/" class="archive-article-date">
+  	<time datetime="2017-03-28T10:11:15.000Z" itemprop="datePublished"><i class="icon-clock"></i>Mar 28 2017</time>
+</a>
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags"></i>
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/http/">http</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<i class="icon-price-tags"></i>
+	<a class="article-category-link" href="/categories/前端技术/">前端技术</a>
+	</div>
+
+
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+  
+<nav id="article-nav">
+  
+    <a href="/2017/06/06/POSTvsPUT/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          POST vs PUT
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2017/02/26/http爆炸重点学习——URL/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">http爆炸重点学习——URL</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+
+
+<div class="share_jia">
+	<!-- JiaThis Button BEGIN -->
+	<div class="jiathis_style">
+		<span class="jiathis_txt">Share to: &nbsp; </span>
+		<a class="jiathis_button_facebook"></a> 
+	    <a class="jiathis_button_twitter"></a>
+	    <a class="jiathis_button_plus"></a> 
+	    <a class="jiathis_button_tsina"></a>
+		<a class="jiathis_button_cqq"></a>
+		<a class="jiathis_button_douban"></a>
+		<a class="jiathis_button_weixin"></a>
+		<a class="jiathis_button_tumblr"></a>
+    <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	</div>
+	<script type="text/javascript" src="//v3.jiathis.com/code/jia.js?uid=1405949716054953" charset="utf-8"></script>
+	<!-- JiaThis Button END -->
+</div>
+
+
+
+
+
+
+
+
+
+      </div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2019 PerezYuan
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    <script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: false,
+		animate: true,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: false,
+		root: "/",
+		innerArchive: true
+	}
+</script>
+
+<script src="/./main.js"></script>
+
+
+    
+<div class="tools-col">
+  <ul class="btn-wrap">
+    
+      <li class="chose" data-hook="tools-section-all"><span class="text">全部</span><i class="icon-book"></i></li>
+    
+    
+      <li data-hook="tools-section-tag"><span class="text">标签</span><i class="icon-price-tags"></i></li>
+    
+    
+      <li data-hook="tools-section-friends"><span class="text">友链</span><i class="icon-link"></i></li>
+    
+    
+      <li data-hook="tools-section-me"><span class="text">我</span><i class="icon-smile"></i></li>
+    
+  </ul>
+  <div class="tools-wrap">
+    
+    	<section class="tools-section tools-section-all chose">
+    	</section>
+    
+
+    
+    	<section class="tools-section tools-section-tag">
+    			<div class="widget tagcloud" id="js-tagcloud">
+    				<a href="/tags/CSS/" style="font-size: 13.33px;">CSS</a> <a href="/tags/ajax/" style="font-size: 10px;">ajax</a> <a href="/tags/delete/" style="font-size: 10px;">delete</a> <a href="/tags/es6/" style="font-size: 10px;">es6</a> <a href="/tags/express/" style="font-size: 10px;">express</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/http/" style="font-size: 16.67px;">http</a> <a href="/tags/js/" style="font-size: 20px;">js</a> <a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/node-js/" style="font-size: 10px;">node.js</a> <a href="/tags/this/" style="font-size: 13.33px;">this</a> <a href="/tags/vue/" style="font-size: 10px;">vue</a> <a href="/tags/云存储/" style="font-size: 10px;">云存储</a> <a href="/tags/拷贝/" style="font-size: 10px;">拷贝</a> <a href="/tags/构建工具/" style="font-size: 10px;">构建工具</a> <a href="/tags/移动端/" style="font-size: 13.33px;">移动端</a>
+    			</div>
+    	</section>
+    
+
+    
+    	<section class="tools-section tools-section-friends">
+  		
+  			<div class="friends-wrap" id="js-friends">
+  			
+  	          <a target="_blank" class="main-nav-link switch-friends-link" href="http://butsalt.me/">butsalt</a>
+  	        
+  	          <a target="_blank" class="main-nav-link switch-friends-link" href="https://github.com/amnhh/amnhh.github.io/issues">amnhh</a>
+  	        
+  	        </div>
+  		
+    	</section>
+    
+
+    
+    	<section class="tools-section tools-section-me">
+  	  	
+  	  		<div class="aboutme-wrap" id="js-aboutme">热爱前端&lt;br&gt;&lt;br&gt;热爱绘画</div>
+  	  	
+    	</section>
+    
+  </div>
+  
+</div>
+    <!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+  </div>
+</body>
+</html>

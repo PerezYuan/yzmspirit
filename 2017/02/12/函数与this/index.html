@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="dns-prefetch" href="http://blog.fens.me">
+  <title>函数与this | Spirit</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="今天看到同事做的一个关于this的总结，深思想了一下这方面的知识，也感觉到某些知识掌握得还不算牢固，在这儿做一个比较全面的总结吧。">
+<meta name="keywords" content="js,this">
+<meta property="og:type" content="article">
+<meta property="og:title" content="函数与this">
+<meta property="og:url" content="http://blog.fens.me/2017/02/12/函数与this/index.html">
+<meta property="og:site_name" content="Spirit">
+<meta property="og:description" content="今天看到同事做的一个关于this的总结，深思想了一下这方面的知识，也感觉到某些知识掌握得还不算牢固，在这儿做一个比较全面的总结吧。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-07-07T13:07:25.203Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="函数与this">
+<meta name="twitter:description" content="今天看到同事做的一个关于this的总结，深思想了一下这方面的知识，也感觉到某些知识掌握得还不算牢固，在这儿做一个比较全面的总结吧。">
+  
+    <link rel="alternative" href="/atom.xml" title="Spirit" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="stylesheet" href="/main.css">
+  
+
+</head>
+</html>
+<body>
+  <div id="container">
+    <div class="left-col">
+      <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img src="/author.jpg" class="js-avatar">
+			
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">PerezYuan</a></h1>
+		</hgroup>
+
+		
+		<p class="header-subtitle">元気を出して大いにやる</p>
+		
+
+		<nav class="header-menu">
+			<ul>
+			
+				<li><a href="http://www.yzmspirit.com/">主页</a></li>
+	        
+			</ul>
+		</nav>
+		<nav class="header-smart-menu">
+	        
+    		
+    			
+    			<a class="js-smart-menu" data-idx="0" href="javascript:void(0)">所有文章</a>
+    			
+    			
+            
+    			
+    			<a class="js-smart-menu" data-idx="1" href="javascript:void(0)">标签</a>
+    			
+    			
+            
+    			
+    			<a class="js-smart-menu" data-idx="2" href="javascript:void(0)">友链</a>
+    			
+    			
+            
+    			
+    			<a class="js-smart-menu" data-idx="3" href="javascript:void(0)">关于我</a>
+    			
+    			
+            
+		</nav>
+		<nav class="header-nav">
+			<div class="social">
+				
+					<a class="github" target="_blank" href="https://github.com/PerezYuan" title="github">github</a>
+		        
+					<a class="weibo" target="_blank" href="http://weibo.com/u/2193947000" title="weibo">weibo</a>
+		        
+			</div>
+		</nav>
+	</header>		
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"><i class="icon-list"></i></div>
+  		<h1 class="header-author js-mobile-header hide">PerezYuan</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+				
+					<img src="/author.jpg" class="js-avatar">
+				
+			</div>
+			<hgroup>
+			  <h1 class="header-author">PerezYuan</h1>
+			</hgroup>
+			
+			<p class="header-subtitle">元気を出して大いにやる</p>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="http://www.yzmspirit.com/">主页</a></li>
+		        
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/PerezYuan" title="github">github</a>
+			        
+						<a class="weibo" target="_blank" href="http://weibo.com/u/2193947000" title="weibo">weibo</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+
+      <div class="body-wrap">
+        <article id="post-函数与this" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      函数与this
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>今天看到同事做的一个关于<code>this</code>的总结，深思想了一下这方面的知识，也感觉到某些知识掌握得还不算牢固，在这儿做一个比较全面的总结吧。</p>
+<a id="more"></a>
+<h2 id="1-定义一个函数"><a href="#1-定义一个函数" class="headerlink" title="1.定义一个函数"></a>1.定义一个函数</h2><p>首先，我们了解的最常见的函数定义方法有2种，如下所示：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 方法1 函数声明式(FunctionDeclaration)</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>) </span>&#123;&#125;</span><br><span class="line"><span class="comment">// 方法2 函数表达式(FunctionExpression)</span></span><br><span class="line"><span class="keyword">var</span> fn = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;&#125;</span><br></pre></td></tr></table></figure>
+<p>这里衍生了第一个知识点——<strong>声明提前</strong>，什么是声明提前呢？其实就是js的解析器会将声明一个变量的代码解析到该变量执行代码之前，如下代码打印的是<code>number</code>而不是<code>undefined</code>。<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> a = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">var</span> a;</span><br><span class="line"> </span><br><span class="line"><span class="built_in">console</span>.log(a); <span class="comment">// number</span></span><br></pre></td></tr></table></figure></p>
+<p>所以有了这个概念 我们就更能理解下面代码为什么<code>test1</code>不报错而<code>test2</code>报错了：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">test1(); <span class="comment">// 相当于在这行代码之前已经存在一个 var test1了</span></span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">test1</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    alert(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">test2(); <span class="comment">// TypeError: test2 is not a function</span></span><br><span class="line"> </span><br><span class="line"><span class="keyword">var</span> test2 = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    alert(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="2-匿名函数"><a href="#2-匿名函数" class="headerlink" title="2.匿名函数"></a>2.匿名函数</h2><p>了解完了函数的定义，我们再来看一下另外一个函数有趣的地方：<strong>匿名函数</strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    alert(<span class="number">1</span>);</span><br><span class="line">&#125;)()</span><br></pre></td></tr></table></figure>
+<p>匿名函数(anonymous)顾名思义，就是没有名字的函数。我们上述的函数定义中，方法二就是用一个变量来接收匿名函数的，那么问题来了，为什么我们去掉双括号之后，匿名函数就不会自执行反而报错了呢？<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Error</span></span><br><span class="line"><span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    alert(<span class="number">1</span>);</span><br><span class="line">&#125;()</span><br></pre></td></tr></table></figure></p>
+<p>我们来看下面一句话（摘自stackoverflow）：</p>
+<blockquote>
+<p>It doesn’t work because it is being parsed as a <code>FunctionDeclaration</code>, and the name identifier of function declarations is mandatory.<br>When you surround it with parentheses it is evaluated as a <code>FunctionExpression</code>, and function expressions can be named or not.</p>
+</blockquote>
+<p>回到函数的定义上来，本质上来讲，匿名函数<code>function() {}</code>是叫做函数定义式(FunctionDeclaration)，执行<code>typeof function(){}</code>也会返回”function”，但是<code>FunctionDeclaration</code>是不能直接执行的，需要将其转换成为<code>FunctionExpression</code>才能执行，而我们上述函数定义中讲到的<code>var test2 = function() {}</code>就是一种将其转换为<code>FunctionExpression</code>的方式。</p>
+<blockquote>
+<p>The Parentheses (formally called the Grouping Operator) can surround only expressions, and a function expression is evaluated.</p>
+</blockquote>
+<p>所以，括号就能完成匿名函数转换的任务从而使得其可以执行。</p>
+<hr>
+<p>See more:</p>
+<blockquote>
+<p>the Comma operator can also handle only expressions.<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">0</span>,<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123; <span class="keyword">return</span> <span class="number">1</span> &#125;()</span><br><span class="line">=&gt; <span class="number">1</span></span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<h2 id="3-this"><a href="#3-this" class="headerlink" title="3.this"></a>3.this</h2><p>扯了半天，终于到<code>this</code>了，这个概念也是js中坑比较多的，但是但凡知道了其中的原理，关于<code>this</code>的问题就迎刃而解了。</p>
+<h3 id="1-执行上下文-Execution-context"><a href="#1-执行上下文-Execution-context" class="headerlink" title="1.执行上下文(Execution context)"></a>1.执行上下文(Execution context)</h3><p>每一个函数都有自己的执行上下文，并且每个执行上下文中都有它自己的变量对象，用于存储执行上下文中的变量 、函数声明 、函数参数，这解释了js如何找到我们定义的函数和变量。</p>
+<p><strong>那么<code>this</code>指向哪儿，说白了就是产生当前的执行上下文的那个对象，在函数中来说就是调用函数的那个对象</strong></p>
+<p>直接在浏览器的<code>console</code>中打印<code>this</code>，返回的就是<code>window</code>对象。</p>
+<h3 id="2-块级作用域"><a href="#2-块级作用域" class="headerlink" title="2.块级作用域"></a>2.块级作用域</h3><p>函数能创建出新的作用域(scope)，这是if(),for()等办不到的，所以js是没有块级作用域的。<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// C语言  </span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;  </span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(<span class="literal">true</span>) &#123;  </span><br><span class="line">        <span class="keyword">int</span> i = <span class="number">3</span>;  </span><br><span class="line">    &#125;  </span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%d/n"</span>, i);  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>在C语言中，上述代码是会报错的，因为<code>i</code>是在<code>if</code>的块级作用域中创建的，所以<code>printf</code>并不能再上下文中找到变量<code>i</code>，但如下的js代码就能准确地执行：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// js语言</span></span><br><span class="line"><span class="keyword">if</span>(<span class="literal">true</span>) &#123;  </span><br><span class="line">    <span class="keyword">var</span> i = <span class="number">3</span>;  </span><br><span class="line">&#125;  </span><br><span class="line"><span class="built_in">console</span>.log(i); <span class="comment">// 3</span></span><br></pre></td></tr></table></figure></p>
+<h3 id="3-函数调用-Invoking-a-JavaScript-Function"><a href="#3-函数调用-Invoking-a-JavaScript-Function" class="headerlink" title="3.函数调用(Invoking a JavaScript Function)"></a>3.函数调用(Invoking a JavaScript Function)</h3><p>我们现在了解了上述两个概念之后，现在我们要认真地判断当前调用函数的对象了，这里就不得不提几种函数调用的方法从而跟深刻得了解<code>this</code>的指向。</p>
+<p>1.函数直接调用(Invoking a Function as a Function)<br>2.作为对象方法调用(Invoking a Function as a Method)<br>3.作为构造函数调用(Invoking a Function with a Function Constructor)<br>4.<code>call()</code> &amp;&amp; <code>apply()</code>调用(Invoking a Function with a Function Method)</p>
+<p>前3种其实都是第4种的语法糖。</p>
+<h4 id="1-函数直接调用"><a href="#1-函数直接调用" class="headerlink" title="1.函数直接调用"></a>1.函数直接调用</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> a = <span class="number">1</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="keyword">this</span>); <span class="comment">// Window</span></span><br><span class="line">    <span class="built_in">console</span>.log(<span class="keyword">this</span>.a);</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">fn();</span><br></pre></td></tr></table></figure>
+<h4 id="2-作为对象方法调用"><a href="#2-作为对象方法调用" class="headerlink" title="2.作为对象方法调用"></a>2.作为对象方法调用</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> a = <span class="number">1000</span>;</span><br><span class="line"><span class="keyword">var</span> obj = &#123;</span><br><span class="line">    a: <span class="number">1</span>,</span><br><span class="line">    say: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="keyword">this</span>); <span class="comment">// obj</span></span><br><span class="line">        <span class="built_in">console</span>.log(<span class="keyword">this</span>.a);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">obj.say();  <span class="comment">// 1</span></span><br></pre></td></tr></table></figure>
+<h4 id="3-作为构造函数调用"><a href="#3-作为构造函数调用" class="headerlink" title="3.作为构造函数调用"></a>3.作为构造函数调用</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> x = <span class="number">1000</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params">arg</span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="keyword">this</span>); <span class="comment">// fn</span></span><br><span class="line">    <span class="keyword">this</span>.x = arg;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">var</span> obj = <span class="keyword">new</span> fn(<span class="number">2</span>);</span><br><span class="line"><span class="built_in">console</span>.log(obj.x); <span class="comment">// 2</span></span><br></pre></td></tr></table></figure>
+<h4 id="4-call-amp-amp-apply-调用"><a href="#4-call-amp-amp-apply-调用" class="headerlink" title="4.call() &amp;&amp; apply()调用"></a>4.<code>call()</code> &amp;&amp; <code>apply()</code>调用</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="keyword">this</span>); <span class="comment">// b</span></span><br><span class="line">    <span class="built_in">console</span>.log(<span class="keyword">this</span>.a);</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">var</span> b = &#123;</span><br><span class="line">    a: <span class="number">5</span></span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">fn.call(b);  <span class="comment">// 5</span></span><br></pre></td></tr></table></figure>
+<p>解释一下：</p>
+<ul>
+<li>直接函数调用可以看做是<code>fn.call(window, undefined)</code>，自然<code>this</code>便指向了<code>window</code>。</li>
+<li>方法调用可以看做是<code>say.call(obj)</code>，同理，<code>this</code>便指向了<code>obj</code>。</li>
+<li>构造函数，其实是使用<code>new</code>方法构造出了一个新的对象<code>obj</code>，也可以看做是<code>fn.call(obj)</code>，<code>this</code>便指向了<code>obj</code>。</li>
+</ul>
+<p>以上都是比较基础的问题了，稍微巩固了下，关于ES6的箭头函数涉及到的<code>this</code>问题还没想得特别全面和透彻，再仔细看下会在下面博客中讲咯~</p>
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      <a href="/2017/02/12/函数与this/" class="archive-article-date">
+  	<time datetime="2017-02-12T07:10:12.000Z" itemprop="datePublished"><i class="icon-clock"></i>Feb 12 2017</time>
+</a>
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags"></i>
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/js/">js</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/this/">this</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<i class="icon-price-tags"></i>
+	<a class="article-category-link" href="/categories/前端技术/">前端技术</a>
+	</div>
+
+
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+  
+<nav id="article-nav">
+  
+    <a href="/2017/02/15/ES6箭头函数中的this/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          进击的ES6箭头函数和this
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2017/01/27/年总结/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">年总结</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+
+
+<div class="share_jia">
+	<!-- JiaThis Button BEGIN -->
+	<div class="jiathis_style">
+		<span class="jiathis_txt">Share to: &nbsp; </span>
+		<a class="jiathis_button_facebook"></a> 
+	    <a class="jiathis_button_twitter"></a>
+	    <a class="jiathis_button_plus"></a> 
+	    <a class="jiathis_button_tsina"></a>
+		<a class="jiathis_button_cqq"></a>
+		<a class="jiathis_button_douban"></a>
+		<a class="jiathis_button_weixin"></a>
+		<a class="jiathis_button_tumblr"></a>
+    <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	</div>
+	<script type="text/javascript" src="//v3.jiathis.com/code/jia.js?uid=1405949716054953" charset="utf-8"></script>
+	<!-- JiaThis Button END -->
+</div>
+
+
+
+
+
+
+
+
+
+      </div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2019 PerezYuan
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    <script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: false,
+		animate: true,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: false,
+		root: "/",
+		innerArchive: true
+	}
+</script>
+
+<script src="/./main.js"></script>
+
+
+    
+<div class="tools-col">
+  <ul class="btn-wrap">
+    
+      <li class="chose" data-hook="tools-section-all"><span class="text">全部</span><i class="icon-book"></i></li>
+    
+    
+      <li data-hook="tools-section-tag"><span class="text">标签</span><i class="icon-price-tags"></i></li>
+    
+    
+      <li data-hook="tools-section-friends"><span class="text">友链</span><i class="icon-link"></i></li>
+    
+    
+      <li data-hook="tools-section-me"><span class="text">我</span><i class="icon-smile"></i></li>
+    
+  </ul>
+  <div class="tools-wrap">
+    
+    	<section class="tools-section tools-section-all chose">
+    	</section>
+    
+
+    
+    	<section class="tools-section tools-section-tag">
+    			<div class="widget tagcloud" id="js-tagcloud">
+    				<a href="/tags/CSS/" style="font-size: 13.33px;">CSS</a> <a href="/tags/ajax/" style="font-size: 10px;">ajax</a> <a href="/tags/delete/" style="font-size: 10px;">delete</a> <a href="/tags/es6/" style="font-size: 10px;">es6</a> <a href="/tags/express/" style="font-size: 10px;">express</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/http/" style="font-size: 16.67px;">http</a> <a href="/tags/js/" style="font-size: 20px;">js</a> <a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/node-js/" style="font-size: 10px;">node.js</a> <a href="/tags/this/" style="font-size: 13.33px;">this</a> <a href="/tags/vue/" style="font-size: 10px;">vue</a> <a href="/tags/云存储/" style="font-size: 10px;">云存储</a> <a href="/tags/拷贝/" style="font-size: 10px;">拷贝</a> <a href="/tags/构建工具/" style="font-size: 10px;">构建工具</a> <a href="/tags/移动端/" style="font-size: 13.33px;">移动端</a>
+    			</div>
+    	</section>
+    
+
+    
+    	<section class="tools-section tools-section-friends">
+  		
+  			<div class="friends-wrap" id="js-friends">
+  			
+  	          <a target="_blank" class="main-nav-link switch-friends-link" href="http://butsalt.me/">butsalt</a>
+  	        
+  	          <a target="_blank" class="main-nav-link switch-friends-link" href="https://github.com/amnhh/amnhh.github.io/issues">amnhh</a>
+  	        
+  	        </div>
+  		
+    	</section>
+    
+
+    
+    	<section class="tools-section tools-section-me">
+  	  	
+  	  		<div class="aboutme-wrap" id="js-aboutme">热爱前端&lt;br&gt;&lt;br&gt;热爱绘画</div>
+  	  	
+    	</section>
+    
+  </div>
+  
+</div>
+    <!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+  </div>
+</body>
+</html>

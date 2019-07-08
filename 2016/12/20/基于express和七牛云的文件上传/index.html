@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="dns-prefetch" href="http://blog.fens.me">
+  <title>基于express和七牛云的文件上传 | Spirit</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="上传图片功能在web程序中很多时候都能遇到，这篇文章将详细阐述基于Express和七牛云如何实现文件的上传。">
+<meta name="keywords" content="node.js,express,云存储">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基于express和七牛云的文件上传">
+<meta property="og:url" content="http://blog.fens.me/2016/12/20/基于express和七牛云的文件上传/index.html">
+<meta property="og:site_name" content="Spirit">
+<meta property="og:description" content="上传图片功能在web程序中很多时候都能遇到，这篇文章将详细阐述基于Express和七牛云如何实现文件的上传。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://blog.fens.me/img/20161219-1.png">
+<meta property="og:image" content="http://blog.fens.me/img/20161219-2.png">
+<meta property="og:image" content="http://blog.fens.me/img/20161219-3.png">
+<meta property="og:image" content="http://blog.fens.me/img/20161219-4.png">
+<meta property="og:image" content="http://blog.fens.me/img/20161219-5.png">
+<meta property="og:image" content="http://blog.fens.me/img/20161219-6.png">
+<meta property="og:image" content="http://blog.fens.me/img/zip.png">
+<meta property="og:updated_time" content="2019-07-07T13:07:25.204Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="基于express和七牛云的文件上传">
+<meta name="twitter:description" content="上传图片功能在web程序中很多时候都能遇到，这篇文章将详细阐述基于Express和七牛云如何实现文件的上传。">
+<meta name="twitter:image" content="http://blog.fens.me/img/20161219-1.png">
+  
+    <link rel="alternative" href="/atom.xml" title="Spirit" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="stylesheet" href="/main.css">
+  
+
+</head>
+</html>
+<body>
+  <div id="container">
+    <div class="left-col">
+      <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img src="/author.jpg" class="js-avatar">
+			
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">PerezYuan</a></h1>
+		</hgroup>
+
+		
+		<p class="header-subtitle">元気を出して大いにやる</p>
+		
+
+		<nav class="header-menu">
+			<ul>
+			
+				<li><a href="http://www.yzmspirit.com/">主页</a></li>
+	        
+			</ul>
+		</nav>
+		<nav class="header-smart-menu">
+	        
+    		
+    			
+    			<a class="js-smart-menu" data-idx="0" href="javascript:void(0)">所有文章</a>
+    			
+    			
+            
+    			
+    			<a class="js-smart-menu" data-idx="1" href="javascript:void(0)">标签</a>
+    			
+    			
+            
+    			
+    			<a class="js-smart-menu" data-idx="2" href="javascript:void(0)">友链</a>
+    			
+    			
+            
+    			
+    			<a class="js-smart-menu" data-idx="3" href="javascript:void(0)">关于我</a>
+    			
+    			
+            
+		</nav>
+		<nav class="header-nav">
+			<div class="social">
+				
+					<a class="github" target="_blank" href="https://github.com/PerezYuan" title="github">github</a>
+		        
+					<a class="weibo" target="_blank" href="http://weibo.com/u/2193947000" title="weibo">weibo</a>
+		        
+			</div>
+		</nav>
+	</header>		
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"><i class="icon-list"></i></div>
+  		<h1 class="header-author js-mobile-header hide">PerezYuan</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+				
+					<img src="/author.jpg" class="js-avatar">
+				
+			</div>
+			<hgroup>
+			  <h1 class="header-author">PerezYuan</h1>
+			</hgroup>
+			
+			<p class="header-subtitle">元気を出して大いにやる</p>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="http://www.yzmspirit.com/">主页</a></li>
+		        
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/PerezYuan" title="github">github</a>
+			        
+						<a class="weibo" target="_blank" href="http://weibo.com/u/2193947000" title="weibo">weibo</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+
+      <div class="body-wrap">
+        <article id="post-基于express和七牛云的文件上传" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      基于express和七牛云的文件上传
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>上传图片功能在web程序中很多时候都能遇到，这篇文章将详细阐述基于Express和七牛云如何实现文件的上传。</p>
+<a id="more"></a>
+<p>本文将主要分为三个部分对整个功能的实现进行阐述</p>
+<ol>
+<li><strong>架构篇</strong></li>
+<li><strong>前后端篇</strong></li>
+<li><strong>七牛云篇</strong></li>
+</ol>
+<hr>
+<h1 id="架构篇"><a href="#架构篇" class="headerlink" title="架构篇"></a>架构篇</h1><p>如果你对Express很熟悉，可以跳过。</p>
+<p>Express 是一种保持最低程度规模的灵活 Node.js Web 应用程序框架，为 Web 和移动应用程序提供一组强大的功能。具体API和高级用法请参照<a href="http://expressjs.com/" title="Express官网" target="_blank" rel="noopener">Express官网</a></p>
+<h2 id="（一）构建基础项目"><a href="#（一）构建基础项目" class="headerlink" title="（一）构建基础项目"></a>（一）构建基础项目</h2><p>首先我们采用Express为我们提供的生成工具Express application generator进行项目最简单的架构处理。<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># 全局安装express-generator</span><br><span class="line">$ npm install express-generator -g</span><br><span class="line"># 构建名为app的express项目</span><br><span class="line">$ express app</span><br><span class="line"># 构建项目</span><br><span class="line">$ cd app</span><br><span class="line">$ npm install</span><br></pre></td></tr></table></figure></p>
+<p>可以看到如下的目录结构<br><img src="/img/20161219-1.png" width="460" height="355" title="目录结构"></p>
+<p><strong>注意一下两个重要的文件</strong></p>
+<ol>
+<li><p><code>bin/www</code> node项目主要的入口文件，配置node.js的http服务和端口并进行监听。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 设置端口</span></span><br><span class="line"><span class="keyword">var</span> port = normalizePort(process.env.PORT || <span class="string">'3000'</span>);</span><br><span class="line">app.set(<span class="string">'port'</span>, port);</span><br><span class="line"><span class="comment">// 使用app内的配置启动http服务</span></span><br><span class="line"><span class="keyword">var</span> server = http.createServer(app);</span><br><span class="line"><span class="comment">// 开始监听</span></span><br><span class="line">server.listen(port);</span><br><span class="line">server.on(<span class="string">'error'</span>, onError);</span><br><span class="line">server.on(<span class="string">'listening'</span>, onListening);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>app.js</code> express基本配置文件，完成路由注册，模板指定等基础配置项</p>
+</li>
+</ol>
+<p>于是我们可以简单修改一下监听端口，从3000修改到3001端口<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> port = normalizePort(process.env.PORT || <span class="string">'3001'</span>);</span><br></pre></td></tr></table></figure></p>
+<p>由于<code>package.json</code>文件中包含了这样一条配置<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&quot;scripts&quot;: &#123;</span><br><span class="line">    &quot;start&quot;: &quot;node ./bin/www&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>所以直接在目录命令行下执行，我们就可以在localhost:3001中看到我们的基本页面了<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ npm start</span><br><span class="line"> </span><br><span class="line">&gt; app@<span class="number">0.0</span><span class="number">.0</span> start C:\Users\admin\Desktop\test博客\app</span><br><span class="line">&gt; node ./bin/www</span><br><span class="line">GET / <span class="number">200</span> <span class="number">467.622</span> ms - <span class="number">170</span></span><br><span class="line">GET /stylesheets/style.css <span class="number">200</span> <span class="number">8.240</span> ms - <span class="number">111</span></span><br><span class="line">GET /favicon.ico <span class="number">404</span> <span class="number">31.661</span> ms - <span class="number">1185</span></span><br></pre></td></tr></table></figure></p>
+<h3 id="扩展nunjucks模板"><a href="#扩展nunjucks模板" class="headerlink" title="扩展nunjucks模板"></a>扩展nunjucks模板</h3><p>由于自身不喜欢<code>jade</code>对<code>html</code>和扩展方式，所以采用<code>nunjucks</code>对模板进行扩展，首先安装<code>nunjucks</code>模板</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ npm install --save nunjucks</span><br></pre></td></tr></table></figure>
+<p>在nunjucks的<a href="https://mozilla.github.io/nunjucks/getting-started.html" title="Getting started" target="_blank" rel="noopener">Getting started</a>章节中有这样一段话</p>
+<blockquote>
+<p>Using express? Simply pass your express app into configure:<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> app = express();</span><br><span class="line"> </span><br><span class="line">nunjucks.configure(<span class="string">'views'</span>, &#123;</span><br><span class="line">    autoescape: <span class="literal">true</span>,</span><br><span class="line">    express: app</span><br><span class="line">&#125;);</span><br><span class="line"> </span><br><span class="line">app.get(<span class="string">'/'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">req, res</span>) </span>&#123;</span><br><span class="line">    res.render(<span class="string">'index.html'</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<p>注意两点</p>
+<ol>
+<li>获取<code>nunjucks</code>对象并配置<code>app</code></li>
+<li><strong>渲染模板<code>jade</code>不带<code>.html</code>后缀，<code>nunjucks</code>需要加上</strong></li>
+</ol>
+<p>在app.js中找到对应地方，删除原有的<code>jade</code>配置，加上如下代码<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> nunjucks = <span class="built_in">require</span>(<span class="string">'nunjucks'</span>);</span><br><span class="line"> </span><br><span class="line">nunjucks.configure(path.join(__dirname, <span class="string">'views'</span>), &#123;</span><br><span class="line">  autoescape: <span class="literal">true</span>,</span><br><span class="line">  express: app,</span><br><span class="line">  watch: <span class="literal">true</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<p>修改原<code>jade</code>模板中的内容，并在对应路由处加上<code>.html</code>后缀<br>index.js<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> express = <span class="built_in">require</span>(<span class="string">'express'</span>);</span><br><span class="line"><span class="keyword">var</span> router = express.Router();</span><br><span class="line"> </span><br><span class="line"><span class="comment">/* GET home page. */</span></span><br><span class="line">router.get(<span class="string">'/'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">req, res, next</span>) </span>&#123;</span><br><span class="line">  res.render(<span class="string">'index.html'</span>, &#123; <span class="attr">title</span>: <span class="string">'Express'</span> &#125;);</span><br><span class="line">&#125;);</span><br><span class="line"> </span><br><span class="line"><span class="built_in">module</span>.exports = router;</span><br></pre></td></tr></table></figure></p>
+<p>app.js<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// error handler</span></span><br><span class="line">app.use(<span class="function"><span class="keyword">function</span>(<span class="params">err, req, res, next</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// set locals, only providing error in development</span></span><br><span class="line">  res.locals.message = err.message;</span><br><span class="line">  res.locals.error = req.app.get(<span class="string">'env'</span>) === <span class="string">'development'</span> ? err : &#123;&#125;;</span><br><span class="line"> </span><br><span class="line">  <span class="comment">// render the error page</span></span><br><span class="line">  res.status(err.status || <span class="number">500</span>);</span><br><span class="line">  res.render(<span class="string">'error.html'</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<p>layout.html:<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!doctype html&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span> <span class="attr">lang</span>=<span class="string">"zh-cn"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">"UTF-8"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">name</span>=<span class="string">"viewport"</span></span></span><br><span class="line"><span class="tag">          <span class="attr">content</span>=<span class="string">"width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">http-equiv</span>=<span class="string">"X-UA-Compatible"</span> <span class="attr">content</span>=<span class="string">"ie=edge"</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">"stylesheet"</span> <span class="attr">href</span>=<span class="string">"/stylesheets/style.css"</span>&gt;</span>    </span><br><span class="line">	<span class="tag">&lt;<span class="name">title</span>&gt;</span>&#123;&#123; title | safe &#125;&#125;<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">    &#123;% block header %&#125;</span><br><span class="line">    &#123;% endblock %&#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">&#123;% block content %&#125;&#123;% endblock %&#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>index.html:<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#123;% extends "layout.html" %&#125;</span><br><span class="line"> </span><br><span class="line">&#123;% block content %&#125;</span><br><span class="line">    <span class="tag">&lt;<span class="name">h1</span>&gt;</span>&#123;&#123; title | safe &#125;&#125;<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">p</span>&gt;</span>Welcome to &#123;&#123; title | safe &#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">&#123;% endblock %&#125;</span><br></pre></td></tr></table></figure></p>
+<p>error.html:<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;% extends "layout.html" %&#125;</span><br><span class="line"> </span><br><span class="line">&#123;% block content %&#125;</span><br><span class="line">    error</span><br><span class="line">&#123;% endblock %&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="（二）关于路由"><a href="#（二）关于路由" class="headerlink" title="（二）关于路由"></a>（二）关于路由</h2><p>我们可以看到，在routes下面有两个文件，分别是<code>index.js</code>和<code>users.js</code>，他们的结构都类似<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> express = <span class="built_in">require</span>(<span class="string">'express'</span>);</span><br><span class="line"><span class="keyword">var</span> router = express.Router();</span><br><span class="line"> </span><br><span class="line">router.get(<span class="string">'/'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">req, res, next</span>) </span>&#123;</span><br><span class="line">  res.render(<span class="string">'index'</span>, &#123; <span class="attr">title</span>: <span class="string">'Express'</span> &#125;);</span><br><span class="line">&#125;);</span><br><span class="line"> </span><br><span class="line"><span class="built_in">module</span>.exports = router;</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li><code>router</code>对象可以通过<code>router.METHOD</code>获取到路由，如<code>router.get</code>、<code>router.post</code>、<code>router.put</code>等。</li>
+<li>利用中间件中的<code>res</code>对象，可以执行渲染模板或者返回具体对象等操作</li>
+</ul>
+<p>到此为止我们大致的项目架构就搭建起来了。</p>
+<hr>
+<h1 id="前后端篇"><a href="#前后端篇" class="headerlink" title="前后端篇"></a>前后端篇</h1><p>下面我们将来尝试写具体的上传实现代码，大致思路为前端在点击按钮的时候创建一个<code>input type=file</code>对象,通过配置的参数完成对象的基本属性配置并点击，并构造一个FormData和xhr对象上传给后端，后端接受到FormData后存在一个缓存的<code>temp</code>文件夹中。</p>
+<h2 id="（一）前端实现"><a href="#（一）前端实现" class="headerlink" title="（一）前端实现"></a>（一）前端实现</h2><p>废话不多说，直接上代码</p>
+<p>index.html<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br></pre></td><td class="code"><pre><span class="line">&#123;% extends "layout.html" %&#125;</span><br><span class="line"> </span><br><span class="line">&#123;% block content %&#125;</span><br><span class="line">    <span class="tag">&lt;<span class="name">h1</span>&gt;</span>&#123;&#123; title | safe &#125;&#125;<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">p</span>&gt;</span>Welcome to &#123;&#123; title | safe &#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"> </span><br><span class="line">    <span class="tag">&lt;<span class="name">button</span> <span class="attr">id</span>=<span class="string">"up"</span>&gt;</span>点击上传文件<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">p</span> <span class="attr">id</span>=<span class="string">"note"</span>&gt;</span><span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">p</span> <span class="attr">id</span>=<span class="string">"process"</span>&gt;</span><span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"> </span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="javascript">        <span class="keyword">var</span> btn = <span class="built_in">document</span>.getElementById(<span class="string">'up'</span>),</span></span><br><span class="line"><span class="javascript">            note = <span class="built_in">document</span>.getElementById(<span class="string">"note"</span>),</span></span><br><span class="line"><span class="javascript">            prs = <span class="built_in">document</span>.getElementById(<span class="string">"process"</span>);</span></span><br><span class="line"> </span><br><span class="line"><span class="javascript">        btn.onclick = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span></span><br><span class="line">            myUpload(&#123;</span><br><span class="line"><span class="javascript">                url: <span class="string">'/upload'</span>,</span></span><br><span class="line">                maxSize: 10,</span><br><span class="line"><span class="javascript">                multiple: <span class="literal">true</span>,</span></span><br><span class="line"><span class="javascript">                beforeSend: <span class="function"><span class="keyword">function</span>(<span class="params">file</span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">                    note.innerText = <span class="string">"开始上传..."</span>;</span></span><br><span class="line">                &#125;,</span><br><span class="line"><span class="javascript">                callback: <span class="function"><span class="keyword">function</span>(<span class="params">res, input</span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">                    res = <span class="built_in">JSON</span>.parse(res);</span></span><br><span class="line"><span class="javascript">                    <span class="keyword">if</span>(res.code == <span class="number">1</span>) &#123;</span></span><br><span class="line"><span class="javascript">                        note.innerText = <span class="string">"上传成功!"</span></span></span><br><span class="line"><span class="javascript">                    &#125; <span class="keyword">else</span> &#123;</span></span><br><span class="line"><span class="javascript">                        <span class="built_in">console</span>.log(res.msg);</span></span><br><span class="line">                    &#125;</span><br><span class="line"><span class="javascript">                    <span class="built_in">document</span>.body.removeChild(input);</span></span><br><span class="line">                &#125;,</span><br><span class="line"><span class="javascript">                uploading: <span class="function"><span class="keyword">function</span>(<span class="params">pre</span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">                    prs.innerText = <span class="string">"当前上传进度为："</span> + pre + <span class="string">"%"</span>;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125;</span><br><span class="line"> </span><br><span class="line"><span class="javascript">        <span class="function"><span class="keyword">function</span> <span class="title">myUpload</span>(<span class="params">option</span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">            <span class="keyword">var</span> fd = <span class="keyword">new</span> FormData(),</span></span><br><span class="line"><span class="javascript">                xhr = <span class="keyword">new</span> XMLHttpRequest(),</span></span><br><span class="line">                input;</span><br><span class="line"><span class="javascript">            input = <span class="built_in">document</span>.createElement(<span class="string">'input'</span>);</span></span><br><span class="line"><span class="javascript">            input.setAttribute(<span class="string">'id'</span>, <span class="string">'myUploadInput'</span>);</span></span><br><span class="line"><span class="javascript">            input.setAttribute(<span class="string">'type'</span>, <span class="string">'file'</span>);</span></span><br><span class="line"><span class="javascript">            input.setAttribute(<span class="string">'name'</span>, <span class="string">'file'</span>);</span></span><br><span class="line"><span class="javascript">            <span class="keyword">if</span>(option.multiple) &#123;</span></span><br><span class="line"><span class="javascript">                input.setAttribute(<span class="string">'multiple'</span>, <span class="literal">true</span>);</span></span><br><span class="line">            &#125;</span><br><span class="line"><span class="javascript">            <span class="built_in">document</span>.body.appendChild(input);</span></span><br><span class="line"><span class="javascript">            input.style.display = <span class="string">'none'</span>;</span></span><br><span class="line">            input.click();</span><br><span class="line"><span class="javascript">            <span class="keyword">var</span> fileType = [<span class="string">'jpg'</span>,<span class="string">'png'</span>];</span></span><br><span class="line"><span class="javascript">            input.onchange = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">            	<span class="keyword">if</span>(input.files.length == <span class="number">0</span>) &#123; <span class="keyword">return</span> <span class="literal">false</span>; &#125;</span></span><br><span class="line"><span class="javascript">                <span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; input.files.length; i++) &#123;</span></span><br><span class="line"><span class="javascript">                	<span class="keyword">var</span> file = input.files[i];</span></span><br><span class="line"><span class="javascript">                	<span class="keyword">var</span> type = file.name.split(<span class="string">'.'</span>).pop();</span></span><br><span class="line"><span class="javascript">                    <span class="keyword">if</span>(option.maxSize &amp;&amp;  file.size &gt; option.maxSize * <span class="number">1024</span> * <span class="number">1024</span>)&#123;</span></span><br><span class="line"><span class="javascript">                        alert(<span class="string">'请上传小于'</span> + option.maxSize + <span class="string">'M的文件'</span>);</span></span><br><span class="line"><span class="javascript">                        <span class="built_in">document</span>.body.removeChild(input);</span></span><br><span class="line"><span class="javascript">                        <span class="keyword">return</span> <span class="literal">false</span>;</span></span><br><span class="line">                    &#125;</span><br><span class="line"><span class="javascript">                    <span class="keyword">if</span>(fileType.indexOf(type.toLocaleLowerCase()) == <span class="number">-1</span>) &#123;</span></span><br><span class="line"><span class="javascript">	                    alert(<span class="string">"暂不支持该类型的文件，请重新选择!"</span>);</span></span><br><span class="line"><span class="javascript">	                    <span class="built_in">document</span>.body.removeChild(input);</span></span><br><span class="line"><span class="javascript">	                    <span class="keyword">return</span> <span class="literal">false</span>;</span></span><br><span class="line">	                &#125;</span><br><span class="line"><span class="javascript">	                <span class="built_in">console</span>.log(fd)</span></span><br><span class="line"><span class="javascript">                    fd.append(<span class="string">'file'</span> + i, file);</span></span><br><span class="line">                &#125;</span><br><span class="line"><span class="javascript">                <span class="keyword">if</span>(option.beforeSend <span class="keyword">instanceof</span> <span class="built_in">Function</span>) &#123;</span></span><br><span class="line"><span class="javascript">                    <span class="keyword">if</span>(option.beforeSend(input) === <span class="literal">false</span>) &#123;</span></span><br><span class="line"><span class="javascript">                    	<span class="built_in">document</span>.body.removeChild(input);</span></span><br><span class="line"><span class="javascript">                        <span class="keyword">return</span> <span class="literal">false</span>;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line"><span class="javascript">                xhr.open(<span class="string">'post'</span>, option.url);</span></span><br><span class="line"><span class="javascript">                xhr.onreadystatechange = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">                    <span class="keyword">if</span>(xhr.status == <span class="number">200</span>)&#123;</span></span><br><span class="line"><span class="javascript">                        <span class="keyword">if</span>(xhr.readyState == <span class="number">4</span>) &#123;</span></span><br><span class="line"><span class="javascript">                            <span class="keyword">if</span>(option.callback <span class="keyword">instanceof</span> <span class="built_in">Function</span>) &#123;</span></span><br><span class="line">                                option.callback(xhr.responseText, input);</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line"><span class="javascript">                    &#125; <span class="keyword">else</span> &#123;</span></span><br><span class="line"><span class="javascript">                    	<span class="built_in">document</span>.body.removeChild(input);</span></span><br><span class="line"><span class="javascript">                        <span class="built_in">console</span>.log(<span class="string">"上传失败！"</span>);</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line"><span class="javascript">                xhr.upload.onprogress = <span class="function"><span class="keyword">function</span>(<span class="params">event</span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">                    <span class="keyword">var</span> pre = <span class="built_in">Math</span>.floor(<span class="number">100</span> * event.loaded / event.total);</span></span><br><span class="line"><span class="javascript">                    <span class="keyword">if</span>(option.uploading <span class="keyword">instanceof</span> <span class="built_in">Function</span>) &#123;</span></span><br><span class="line">                        option.uploading(pre);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                xhr.send(fd);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    <span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">&#123;% endblock %&#125;</span><br></pre></td></tr></table></figure></p>
+<p>大家可以尝试下这段代码，完成一个前端上传的简单实现，这里并不能成功，没有得到服务器的反馈，因为我们还没有配置后端接收请求的路由。这里可以思考两个问题：</p>
+<ol>
+<li><code>input</code>对象在被创建之后，会反复地创建和销毁，在性能考虑上可以尝试只添加一次DOM元素，做判断后处理</li>
+<li>原生的xhr实现可能会有兼容性bug，可以尝试使用<code>jQuery</code>的<code>$.ajax</code>方法，注意必须设置<code>processData=false</code>取消对数据的预处理，<code>contentType=false</code>取消默认的Content-Type，以及截取<code>xhr</code>对象做<code>process</code>处理，具体可以参考<a href="http://www.tuicool.com/articles/RZBJBv" title="http://www.tuicool.com/articles/RZBJBv" target="_blank" rel="noopener">http://www.tuicool.com/articles/RZBJBv</a></li>
+</ol>
+<h2 id="（二）后端实现"><a href="#（二）后端实现" class="headerlink" title="（二）后端实现"></a>（二）后端实现</h2><p>接下来我们就要开始接收从前端传过来的文章数据了</p>
+<p>首先添加路由，由于前端是<code>post</code>请求，所以在<code>index.js</code>中添加一段路由</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">router.post(<span class="string">'/upload'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">req, res, next</span>) </span>&#123;</span><br><span class="line">    res.json(&#123; <span class="attr">code</span> : <span class="number">1</span> &#125;)</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>由于默认的express中req.files对象不能直接接收FormData对象，所以这里我们要借助一个中间件的库<code>connect-multiparty</code>。<a href="https://github.com/expressjs/connect-multiparty" title="connect-multiparty" target="_blank" rel="noopener">connect-multiparty的github</a><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 安装connect-multiparty</span><br><span class="line">$ npm install --save connect-multiparty</span><br></pre></td></tr></table></figure></p>
+<p>配置上传的目录和中间件<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> multiparty = <span class="built_in">require</span>(<span class="string">'connect-multiparty'</span>);</span><br><span class="line"><span class="keyword">const</span> path = <span class="built_in">require</span>(<span class="string">'path'</span>);</span><br><span class="line"><span class="keyword">let</span> uploadDir = path.resolve(__dirname, <span class="string">'../temp'</span>);</span><br><span class="line"><span class="keyword">let</span> multipartMiddleware = multiparty(&#123;uploadDir&#125;);</span><br><span class="line"> </span><br><span class="line">router.post(<span class="string">'/upload'</span>, multipartMiddleware, <span class="function"><span class="keyword">function</span>(<span class="params">req, res, next</span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(req.files);</span><br><span class="line">    res.json(&#123; <span class="attr">code</span> : <span class="number">1</span> &#125;)</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<p>现在我们默认每次上传都是成功的，返回的<code>code : 1</code>，下面再试一试上传按钮<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">GET / 304 26.433 ms - -</span><br><span class="line">GET /stylesheets/style.css 304 3.229 ms - -</span><br><span class="line">&#123; file0:</span><br><span class="line">   &#123; fieldName: &apos;file0&apos;,</span><br><span class="line">     originalFilename: &apos;f.jpg&apos;,</span><br><span class="line">     path: &apos;C:\\Users\\admin\\Desktop\\test博客\\app\\temp\\FEQHjDOAAhIQtiBKxbROngvq.jpg&apos;,</span><br><span class="line">     headers:</span><br><span class="line">      &#123; &apos;content-disposition&apos;: &apos;form-data; name=&quot;file0&quot;; filename=&quot;f.jpg&quot;&apos;,</span><br><span class="line">        &apos;content-type&apos;: &apos;image/jpeg&apos; &#125;,</span><br><span class="line">     size: 80777,</span><br><span class="line">     name: &apos;f.jpg&apos;,</span><br><span class="line">     type: &apos;image/jpeg&apos; &#125; &#125;</span><br><span class="line">POST /upload 200 25.802 ms - 10</span><br></pre></td></tr></table></figure></p>
+<p>就可以在temp目录下看到我们上传的文件了，有没有很激动</p>
+<img src="/img/20161219-2.png" width="336" height="200" title="上传图片">
+<hr>
+<h1 id="七牛云篇"><a href="#七牛云篇" class="headerlink" title="七牛云篇"></a>七牛云篇</h1><p><a href="https://www.qiniu.com/" title="七牛云" target="_blank" rel="noopener">七牛云</a>是企业级的云服务提供商，为免费用户提供了10G的存储空间，每个月100万次Get，10万次的Put/Delete完全够用。提供了比较完整的node.js文档。</p>
+<p>下面我们来同步七牛云吧。</p>
+<h2 id="（一）注册账号创建对象存储空间"><a href="#（一）注册账号创建对象存储空间" class="headerlink" title="（一）注册账号创建对象存储空间"></a>（一）注册账号创建对象存储空间</h2><img src="/img/20161219-3.png" width="800" height="538" title="上传图片">
+<img src="/img/20161219-4.png" width="800" height="390" title="上传图片">
+<h2 id="（二）配置七牛云"><a href="#（二）配置七牛云" class="headerlink" title="（二）配置七牛云"></a>（二）配置七牛云</h2><p>七牛云提供了npm模块安装方案<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ npm install --save qiniu</span><br></pre></td></tr></table></figure></p>
+<p>我们可以跟着<a href="http://developer.qiniu.com/code/v6/sdk/nodejs.html" title="文档" target="_blank" rel="noopener">文档</a>，找到配置Key配置<br><img src="/img/20161219-5.png" width="719" height="385" title="上传图片"></p>
+<p>上传代码：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line">router.post(<span class="string">'/upload'</span>, multipartMiddleware, <span class="function"><span class="keyword">function</span>(<span class="params">req, res, next</span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(req.files);</span><br><span class="line">    <span class="keyword">const</span> qiniu = <span class="built_in">require</span>(<span class="string">"qiniu"</span>);</span><br><span class="line"> </span><br><span class="line">    <span class="comment">//需要填写你的 Access Key 和 Secret Key</span></span><br><span class="line">    qiniu.conf.ACCESS_KEY = <span class="string">'Access Key'</span>;</span><br><span class="line">    qiniu.conf.SECRET_KEY = <span class="string">'Secret Key'</span>;</span><br><span class="line"> </span><br><span class="line">    <span class="comment">//要上传的空间</span></span><br><span class="line">    bucket = <span class="string">'tinashy'</span>;</span><br><span class="line">  </span><br><span class="line">    <span class="comment">//构建上传策略函数</span></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">uptoken</span>(<span class="params">bucket, key</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">let</span> putPolicy = <span class="keyword">new</span> qiniu.rs.PutPolicy(bucket+<span class="string">":"</span>+key);</span><br><span class="line">        <span class="keyword">return</span> putPolicy.token();</span><br><span class="line">    &#125;</span><br><span class="line">  </span><br><span class="line">    <span class="comment">//构造上传函数</span></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">uploadFile</span>(<span class="params">uptoken, key, localFile, resolve, reject</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">let</span> extra = <span class="keyword">new</span> qiniu.io.PutExtra();</span><br><span class="line">        qiniu.io.putFile(uptoken, key, localFile, extra, <span class="function"><span class="keyword">function</span>(<span class="params">err, ret</span>) </span>&#123;</span><br><span class="line">            <span class="keyword">if</span>(!err) &#123;</span><br><span class="line">                <span class="comment">// 上传成功， 处理返回值</span></span><br><span class="line">                resolve(localFile);</span><br><span class="line">                <span class="built_in">console</span>.log(ret.hash, ret.key, ret.persistentId);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">// 上传失败， 处理返回代码</span></span><br><span class="line">                reject(err);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="comment">// 构造Promise数组</span></span><br><span class="line">    <span class="keyword">let</span> promiseArr = [];</span><br><span class="line">    <span class="keyword">for</span> (index <span class="keyword">in</span> req.files) &#123;</span><br><span class="line">        <span class="keyword">let</span> p = <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">            <span class="comment">//上传到七牛后保存的文件名</span></span><br><span class="line">            key = req.files[index].originalFilename;</span><br><span class="line">            <span class="comment">//生成上传 Token</span></span><br><span class="line">            token = uptoken(bucket, key);</span><br><span class="line">      </span><br><span class="line">            <span class="comment">//要上传文件的本地路径</span></span><br><span class="line">            filePath = req.files[index].path;</span><br><span class="line">     </span><br><span class="line">            <span class="comment">//调用uploadFile上传</span></span><br><span class="line">            uploadFile(token, key, filePath, resolve, reject);</span><br><span class="line">        &#125;)</span><br><span class="line"></span><br><span class="line">        promiseArr.push(p);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 所有异步执行完成之后返回成功</span></span><br><span class="line">    <span class="keyword">let</span> pAll = <span class="built_in">Promise</span>.all(promiseArr);</span><br><span class="line">    pAll.then(<span class="function">(<span class="params">localFile</span>) =&gt;</span> &#123;</span><br><span class="line">        <span class="built_in">console</span>.log(localFile);</span><br><span class="line">        res.json(&#123;<span class="attr">code</span>: <span class="number">1</span>&#125;)</span><br><span class="line">    &#125;, (err) =&gt; &#123;</span><br><span class="line">        <span class="built_in">console</span>.log(err);</span><br><span class="line">        res.json(&#123;<span class="attr">code</span>: <span class="number">0</span>, <span class="attr">msg</span>: <span class="string">'上传失败'</span>&#125;);</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>下面我们再去上传一次图片，就可以看到我刚刚上传的f.jpg文件了，基本大功告成了！！</p>
+<img src="/img/20161219-6.png" width="800" height="322" title="上传图片">
+<p>源码地址</p>
+<p><img src="/img/zip.png" width="32" height="32" title="上传图片"> <a href="http://www.yzmspirit.com/code/app.zip" title="源码" target="_blank" rel="noopener">源码</a></p>
+<h3 id="扩展阅读"><a href="#扩展阅读" class="headerlink" title="扩展阅读"></a>扩展阅读</h3><p>利用node.js的fs模块操作文件，删除temp目录下的文件</p>
+<p>Promise学习</p>
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      <a href="/2016/12/20/基于express和七牛云的文件上传/" class="archive-article-date">
+  	<time datetime="2016-12-20T08:12:25.000Z" itemprop="datePublished"><i class="icon-clock"></i>Dec 20 2016</time>
+</a>
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags"></i>
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/express/">express</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/node-js/">node.js</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/云存储/">云存储</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<i class="icon-price-tags"></i>
+	<a class="article-category-link" href="/categories/前端技术/">前端技术</a>
+	</div>
+
+
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+  
+<nav id="article-nav">
+  
+    <a href="/2017/01/17/在ajax中动弹创建input　type='file'问题/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          在ajax中动态创建input type=&#39;file&#39;问题
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/11/28/前端交流会的总结/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">前端交流会的总结</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+
+
+<div class="share_jia">
+	<!-- JiaThis Button BEGIN -->
+	<div class="jiathis_style">
+		<span class="jiathis_txt">Share to: &nbsp; </span>
+		<a class="jiathis_button_facebook"></a> 
+	    <a class="jiathis_button_twitter"></a>
+	    <a class="jiathis_button_plus"></a> 
+	    <a class="jiathis_button_tsina"></a>
+		<a class="jiathis_button_cqq"></a>
+		<a class="jiathis_button_douban"></a>
+		<a class="jiathis_button_weixin"></a>
+		<a class="jiathis_button_tumblr"></a>
+    <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	</div>
+	<script type="text/javascript" src="//v3.jiathis.com/code/jia.js?uid=1405949716054953" charset="utf-8"></script>
+	<!-- JiaThis Button END -->
+</div>
+
+
+
+
+
+
+
+
+
+      </div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2019 PerezYuan
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    <script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: false,
+		animate: true,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: false,
+		root: "/",
+		innerArchive: true
+	}
+</script>
+
+<script src="/./main.js"></script>
+
+
+    
+<div class="tools-col">
+  <ul class="btn-wrap">
+    
+      <li class="chose" data-hook="tools-section-all"><span class="text">全部</span><i class="icon-book"></i></li>
+    
+    
+      <li data-hook="tools-section-tag"><span class="text">标签</span><i class="icon-price-tags"></i></li>
+    
+    
+      <li data-hook="tools-section-friends"><span class="text">友链</span><i class="icon-link"></i></li>
+    
+    
+      <li data-hook="tools-section-me"><span class="text">我</span><i class="icon-smile"></i></li>
+    
+  </ul>
+  <div class="tools-wrap">
+    
+    	<section class="tools-section tools-section-all chose">
+    	</section>
+    
+
+    
+    	<section class="tools-section tools-section-tag">
+    			<div class="widget tagcloud" id="js-tagcloud">
+    				<a href="/tags/CSS/" style="font-size: 13.33px;">CSS</a> <a href="/tags/ajax/" style="font-size: 10px;">ajax</a> <a href="/tags/delete/" style="font-size: 10px;">delete</a> <a href="/tags/es6/" style="font-size: 10px;">es6</a> <a href="/tags/express/" style="font-size: 10px;">express</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/http/" style="font-size: 16.67px;">http</a> <a href="/tags/js/" style="font-size: 20px;">js</a> <a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/node-js/" style="font-size: 10px;">node.js</a> <a href="/tags/this/" style="font-size: 13.33px;">this</a> <a href="/tags/vue/" style="font-size: 10px;">vue</a> <a href="/tags/云存储/" style="font-size: 10px;">云存储</a> <a href="/tags/拷贝/" style="font-size: 10px;">拷贝</a> <a href="/tags/构建工具/" style="font-size: 10px;">构建工具</a> <a href="/tags/移动端/" style="font-size: 13.33px;">移动端</a>
+    			</div>
+    	</section>
+    
+
+    
+    	<section class="tools-section tools-section-friends">
+  		
+  			<div class="friends-wrap" id="js-friends">
+  			
+  	          <a target="_blank" class="main-nav-link switch-friends-link" href="http://butsalt.me/">butsalt</a>
+  	        
+  	          <a target="_blank" class="main-nav-link switch-friends-link" href="https://github.com/amnhh/amnhh.github.io/issues">amnhh</a>
+  	        
+  	        </div>
+  		
+    	</section>
+    
+
+    
+    	<section class="tools-section tools-section-me">
+  	  	
+  	  		<div class="aboutme-wrap" id="js-aboutme">热爱前端&lt;br&gt;&lt;br&gt;热爱绘画</div>
+  	  	
+    	</section>
+    
+  </div>
+  
+</div>
+    <!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+  </div>
+</body>
+</html>

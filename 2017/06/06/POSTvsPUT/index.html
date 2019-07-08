@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="dns-prefetch" href="http://blog.fens.me">
+  <title>POST vs PUT | Spirit</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="最近接触到了一个问题，在http原语中，POST与PUT有什么区别？以前绝大部分情况下都只关心了GET和POST之间的区别，而没有去深入了解过其他方法的区别，深感自己学习知识的不扎实，于是想好好总结下。">
+<meta name="keywords" content="http">
+<meta property="og:type" content="article">
+<meta property="og:title" content="POST vs PUT">
+<meta property="og:url" content="http://blog.fens.me/2017/06/06/POSTvsPUT/index.html">
+<meta property="og:site_name" content="Spirit">
+<meta property="og:description" content="最近接触到了一个问题，在http原语中，POST与PUT有什么区别？以前绝大部分情况下都只关心了GET和POST之间的区别，而没有去深入了解过其他方法的区别，深感自己学习知识的不扎实，于是想好好总结下。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-07-07T13:07:25.201Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="POST vs PUT">
+<meta name="twitter:description" content="最近接触到了一个问题，在http原语中，POST与PUT有什么区别？以前绝大部分情况下都只关心了GET和POST之间的区别，而没有去深入了解过其他方法的区别，深感自己学习知识的不扎实，于是想好好总结下。">
+  
+    <link rel="alternative" href="/atom.xml" title="Spirit" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="stylesheet" href="/main.css">
+  
+
+</head>
+</html>
+<body>
+  <div id="container">
+    <div class="left-col">
+      <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img src="/author.jpg" class="js-avatar">
+			
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">PerezYuan</a></h1>
+		</hgroup>
+
+		
+		<p class="header-subtitle">元気を出して大いにやる</p>
+		
+
+		<nav class="header-menu">
+			<ul>
+			
+				<li><a href="http://www.yzmspirit.com/">主页</a></li>
+	        
+			</ul>
+		</nav>
+		<nav class="header-smart-menu">
+	        
+    		
+    			
+    			<a class="js-smart-menu" data-idx="0" href="javascript:void(0)">所有文章</a>
+    			
+    			
+            
+    			
+    			<a class="js-smart-menu" data-idx="1" href="javascript:void(0)">标签</a>
+    			
+    			
+            
+    			
+    			<a class="js-smart-menu" data-idx="2" href="javascript:void(0)">友链</a>
+    			
+    			
+            
+    			
+    			<a class="js-smart-menu" data-idx="3" href="javascript:void(0)">关于我</a>
+    			
+    			
+            
+		</nav>
+		<nav class="header-nav">
+			<div class="social">
+				
+					<a class="github" target="_blank" href="https://github.com/PerezYuan" title="github">github</a>
+		        
+					<a class="weibo" target="_blank" href="http://weibo.com/u/2193947000" title="weibo">weibo</a>
+		        
+			</div>
+		</nav>
+	</header>		
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"><i class="icon-list"></i></div>
+  		<h1 class="header-author js-mobile-header hide">PerezYuan</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+				
+					<img src="/author.jpg" class="js-avatar">
+				
+			</div>
+			<hgroup>
+			  <h1 class="header-author">PerezYuan</h1>
+			</hgroup>
+			
+			<p class="header-subtitle">元気を出して大いにやる</p>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="http://www.yzmspirit.com/">主页</a></li>
+		        
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/PerezYuan" title="github">github</a>
+			        
+						<a class="weibo" target="_blank" href="http://weibo.com/u/2193947000" title="weibo">weibo</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+
+      <div class="body-wrap">
+        <article id="post-POSTvsPUT" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      POST vs PUT
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>最近接触到了一个问题，在<code>http</code>原语中，<code>POST</code>与<code>PUT</code>有什么区别？以前绝大部分情况下都只关心了<code>GET</code>和<code>POST</code>之间的区别，而没有去深入了解过其他方法的区别，深感自己学习知识的不扎实，于是想好好总结下。</p>
+<a id="more"></a>
+<h1 id="前端使用上的区别"><a href="#前端使用上的区别" class="headerlink" title="前端使用上的区别"></a>前端使用上的区别</h1><p>我所发现在前端使用上的区别仅仅只有在<code>&lt;form&gt;</code>标签的<code>method</code>取值中，我们只能定义<code>POST</code>和<code>GET</code>,不能定义<code>PUT</code>，具体可以参考<a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form#attr-method" target="_blank" rel="noopener">form - HTML | MDN</a>。而在xhr中我们可以任意的去<code>open</code>我们想要的方法，如果有其他使用上的区别请多指教。</p>
+<p>既然使用上没什么大的区别，同时这两个方法都可以去处理服务器上的资源，那么为什么要定义两个原语呢？</p>
+<h1 id="RFC"><a href="#RFC" class="headerlink" title="RFC"></a>RFC</h1><p>第一个想到的当然是直接去<a href="https://tools.ietf.org/html/rfc2616#section-9" target="_blank" rel="noopener">RFC</a>的文档中寻求答案，在文档的第九章节，详细阐述了HTTP/1.1中各个方法的定义，我们从中提取几个比较重要的关键词。</p>
+<h2 id="1-Safe-Method（安全的方法）"><a href="#1-Safe-Method（安全的方法）" class="headerlink" title="1. Safe Method（安全的方法）"></a>1. Safe Method（安全的方法）</h2><p>核心是以下这段话：</p>
+<blockquote>
+<p>In particular, the convention has been established that the GET and HEAD methods SHOULD NOT have the significance of taking an action other than retrieval. These methods ought to be considered “safe”. This allows user agents to represent other methods, such as POST, PUT and DELETE, in a special way, so that the user is made aware of the fact that a possibly unsafe action is being requested.</p>
+</blockquote>
+<p>两个核心点：</p>
+<ul>
+<li><code>GET</code>和<code>HEAD</code>方法不应该具有除了检索以外其他的意义，标准约定的是在去查看或者搜索服务器资源时候，使用这两个方法，这样来看，这两个方法应当是被认为安全的。</li>
+<li>检索资源这种行为也可以发生在当用户使用<code>POST</code>、<code>PUT</code>、<code>DELETE</code>这类方法的请求的时候，这个时候用户可能就请求了一个不安全的动作</li>
+</ul>
+<h2 id="2-Idempotent-Method-幂等的方法"><a href="#2-Idempotent-Method-幂等的方法" class="headerlink" title="2.Idempotent Method(幂等的方法)"></a>2.Idempotent Method(幂等的方法)</h2><p>规范中是这样描述的：</p>
+<blockquote>
+<p>Methods can also have the property of “idempotence” in that (aside from error or expiration issues) the side-effects of N &gt; 0 identical requests is the same as for a single request.The methods GET, HEAD, PUT and DELETE share this property. Also, the methods OPTIONS and TRACE SHOULD NOT have side effects, and so are inherently idempotent.</p>
+</blockquote>
+<p>从定义上来看，幂等性是各个方法的一种属性，表明使用这种方法一次或者多次带来的<code>side-effects</code>（这个直译过来为副作用，但并不是传统意义上的负面作用，具体可以参考<a href="https://www.zhihu.com/question/30779564" target="_blank" rel="noopener">怎么翻译 side effects 好？知乎</a>）是相同的。</p>
+<p><code>GET</code>、<code>HEAD</code>、<code>PUT</code>、<code>DELETE</code>、<code>OPTION</code>和<code>TRACE</code>都享有这个特性，而这里面不包含<code>POST</code>。</p>
+<h1 id="呼之欲出的答案"><a href="#呼之欲出的答案" class="headerlink" title="呼之欲出的答案"></a>呼之欲出的答案</h1><p>从以上描述可以看出，<code>PUT</code>和<code>POST</code>区别关键所在就在于这个幂等的问题上，简而言之，<code>PUT</code>是幂等的，而<code>POST</code>不是。</p>
+<p><code>GET</code>的设计用于获取和检索资源，这种行为应该不产生副作用从而幂等。需要强调的是幂等不代表调取一次或者多次得到的结果不同，而是对资源的状态或者服务器是否产生不一样的影响。比如：<code>GET http://www.baidu.com/article?id=1</code>，不会改变id为1的资源状态，不论调用一次还是多次都没有副作用。</p>
+<p><code>DELETE</code>方法用于删除资源，有副作用，但满足幂等性。比如：<code>DELETE http://www.baidu.com/article?id=2</code>，调用了一次或者多次，都只代表删除id为2的文章，带来的对服务器的影响是相同的。</p>
+<p>网上很多答案说：<strong>POST表示创建资源，PUT表示更新资源</strong>,这样说其实并不完全准确，其实二者都可以完成相同的功能，只是在幂等的情况下，不要去使用<code>POST</code>而已。创建一篇文章的时候，使用<code>POST</code>去完成，比如：<code>POST http://www.baidu.com/createarticle</code>每次调用都会新生成一篇文章，id是自增的，这带来的副作用就不一样，所以不幂等。反之，绝大多数情况下的更新资源操作，<code>PUT http://www.baidu.com/article?id=3</code>去修改id为3的文章的内容，调用一次和多次都是对3产生影响。</p>
+<p>RFC上的说法本质也是这个意思：</p>
+<blockquote>
+<p>The fundamental difference between the POST and PUT requests is reflected in the different meaning of the Request-URI. The URI in a POST request identifies the resource that will handle the enclosed entity. That resource might be a data-accepting process, a gateway to some other protocol, or a separate entity that accepts annotations. In contrast, the URI in a PUT request identifies the entity enclosed with the request – the user agent knows what URI is intended and the server MUST NOT attempt to apply the request to some other resource.</p>
+</blockquote>
+<h1 id="为了什么？"><a href="#为了什么？" class="headerlink" title="为了什么？"></a>为了什么？</h1><p>作为一个前端，其实在使用<code>POST</code>和<code>PUT</code>的时候我们是可以混用，有时候感觉用错了也不会带来问题，但是我们设计接口时候应该去遵循幂等的原则，从而按照标准的方式去使用它们，如果不遵循规范，可能对于爬虫访问接口就会带来影响。</p>
+<p>而在很多基于Rest和Restful架构设计的SOA服务中，需要认真考虑这个问题，由于研究不深就不展开讨论了，这儿有一个知乎上对REST的解释，有兴趣可以戳<a href="https://www.zhihu.com/question/28557115" target="_blank" rel="noopener">怎样用通俗的语言解释REST，以及RESTful？ 知乎</a></p>
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      <a href="/2017/06/06/POSTvsPUT/" class="archive-article-date">
+  	<time datetime="2017-06-05T22:52:11.000Z" itemprop="datePublished"><i class="icon-clock"></i>Jun 6 2017</time>
+</a>
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags"></i>
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/http/">http</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<i class="icon-price-tags"></i>
+	<a class="article-category-link" href="/categories/前端技术/">前端技术</a>
+	</div>
+
+
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+  
+<nav id="article-nav">
+  
+    <a href="/2017/06/14/windows和linux下的路径分隔符问题/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          windows和linux下的路径分隔符问题
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2017/03/28/http爆炸重点学习——缓存/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">http爆炸重点学习——缓存</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+
+
+<div class="share_jia">
+	<!-- JiaThis Button BEGIN -->
+	<div class="jiathis_style">
+		<span class="jiathis_txt">Share to: &nbsp; </span>
+		<a class="jiathis_button_facebook"></a> 
+	    <a class="jiathis_button_twitter"></a>
+	    <a class="jiathis_button_plus"></a> 
+	    <a class="jiathis_button_tsina"></a>
+		<a class="jiathis_button_cqq"></a>
+		<a class="jiathis_button_douban"></a>
+		<a class="jiathis_button_weixin"></a>
+		<a class="jiathis_button_tumblr"></a>
+    <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	</div>
+	<script type="text/javascript" src="//v3.jiathis.com/code/jia.js?uid=1405949716054953" charset="utf-8"></script>
+	<!-- JiaThis Button END -->
+</div>
+
+
+
+
+
+
+
+
+
+      </div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2019 PerezYuan
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    <script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: false,
+		animate: true,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: false,
+		root: "/",
+		innerArchive: true
+	}
+</script>
+
+<script src="/./main.js"></script>
+
+
+    
+<div class="tools-col">
+  <ul class="btn-wrap">
+    
+      <li class="chose" data-hook="tools-section-all"><span class="text">全部</span><i class="icon-book"></i></li>
+    
+    
+      <li data-hook="tools-section-tag"><span class="text">标签</span><i class="icon-price-tags"></i></li>
+    
+    
+      <li data-hook="tools-section-friends"><span class="text">友链</span><i class="icon-link"></i></li>
+    
+    
+      <li data-hook="tools-section-me"><span class="text">我</span><i class="icon-smile"></i></li>
+    
+  </ul>
+  <div class="tools-wrap">
+    
+    	<section class="tools-section tools-section-all chose">
+    	</section>
+    
+
+    
+    	<section class="tools-section tools-section-tag">
+    			<div class="widget tagcloud" id="js-tagcloud">
+    				<a href="/tags/CSS/" style="font-size: 13.33px;">CSS</a> <a href="/tags/ajax/" style="font-size: 10px;">ajax</a> <a href="/tags/delete/" style="font-size: 10px;">delete</a> <a href="/tags/es6/" style="font-size: 10px;">es6</a> <a href="/tags/express/" style="font-size: 10px;">express</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/http/" style="font-size: 16.67px;">http</a> <a href="/tags/js/" style="font-size: 20px;">js</a> <a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/node-js/" style="font-size: 10px;">node.js</a> <a href="/tags/this/" style="font-size: 13.33px;">this</a> <a href="/tags/vue/" style="font-size: 10px;">vue</a> <a href="/tags/云存储/" style="font-size: 10px;">云存储</a> <a href="/tags/拷贝/" style="font-size: 10px;">拷贝</a> <a href="/tags/构建工具/" style="font-size: 10px;">构建工具</a> <a href="/tags/移动端/" style="font-size: 13.33px;">移动端</a>
+    			</div>
+    	</section>
+    
+
+    
+    	<section class="tools-section tools-section-friends">
+  		
+  			<div class="friends-wrap" id="js-friends">
+  			
+  	          <a target="_blank" class="main-nav-link switch-friends-link" href="http://butsalt.me/">butsalt</a>
+  	        
+  	          <a target="_blank" class="main-nav-link switch-friends-link" href="https://github.com/amnhh/amnhh.github.io/issues">amnhh</a>
+  	        
+  	        </div>
+  		
+    	</section>
+    
+
+    
+    	<section class="tools-section tools-section-me">
+  	  	
+  	  		<div class="aboutme-wrap" id="js-aboutme">热爱前端&lt;br&gt;&lt;br&gt;热爱绘画</div>
+  	  	
+    	</section>
+    
+  </div>
+  
+</div>
+    <!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+  </div>
+</body>
+</html>

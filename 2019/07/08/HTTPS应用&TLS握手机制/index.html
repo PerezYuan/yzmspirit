@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="dns-prefetch" href="http://blog.fens.me">
+  <title>HTTPS应用&amp;TLS握手机制 | Spirit</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="HTTPS，顾名思义，就是HTTP+S，而这个S是什么呢，它在HTTP的基础上有了什么变化，为什么需要HTTPS呢，就是本篇要讨论的东西了   我是一条可爱的分割线    首先我们来说一下这个S是什么？  S是指TLS安全协议，是在安全套接字SSL协议的基础上发展而来的，HTTP应用协议一起使用，相对于HTTP来说，给网络资源提供了一层保护层，保障万维网访问的安全性 一、TLS工作的协议">
+<meta name="keywords" content="http">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HTTPS应用&amp;TLS握手机制">
+<meta property="og:url" content="http://blog.fens.me/2019/07/08/HTTPS应用&TLS握手机制/index.html">
+<meta property="og:site_name" content="Spirit">
+<meta property="og:description" content="HTTPS，顾名思义，就是HTTP+S，而这个S是什么呢，它在HTTP的基础上有了什么变化，为什么需要HTTPS呢，就是本篇要讨论的东西了   我是一条可爱的分割线    首先我们来说一下这个S是什么？  S是指TLS安全协议，是在安全套接字SSL协议的基础上发展而来的，HTTP应用协议一起使用，相对于HTTP来说，给网络资源提供了一层保护层，保障万维网访问的安全性 一、TLS工作的协议">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://tinashy-1256534403.cos.ap-chengdu.myqcloud.com/TLS%3ASSL%E6%89%80%E5%9C%A8%E7%9A%84%E5%8D%8F%E8%AE%AE%E5%B1%82.png">
+<meta property="og:updated_time" content="2019-07-08T02:44:38.876Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="HTTPS应用&amp;TLS握手机制">
+<meta name="twitter:description" content="HTTPS，顾名思义，就是HTTP+S，而这个S是什么呢，它在HTTP的基础上有了什么变化，为什么需要HTTPS呢，就是本篇要讨论的东西了   我是一条可爱的分割线    首先我们来说一下这个S是什么？  S是指TLS安全协议，是在安全套接字SSL协议的基础上发展而来的，HTTP应用协议一起使用，相对于HTTP来说，给网络资源提供了一层保护层，保障万维网访问的安全性 一、TLS工作的协议">
+<meta name="twitter:image" content="https://tinashy-1256534403.cos.ap-chengdu.myqcloud.com/TLS%3ASSL%E6%89%80%E5%9C%A8%E7%9A%84%E5%8D%8F%E8%AE%AE%E5%B1%82.png">
+  
+    <link rel="alternative" href="/atom.xml" title="Spirit" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="stylesheet" href="/main.css">
+  
+
+</head>
+</html>
+<body>
+  <div id="container">
+    <div class="left-col">
+      <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img src="/author.jpg" class="js-avatar">
+			
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">PerezYuan</a></h1>
+		</hgroup>
+
+		
+		<p class="header-subtitle">元気を出して大いにやる</p>
+		
+
+		<nav class="header-menu">
+			<ul>
+			
+				<li><a href="http://www.yzmspirit.com/">主页</a></li>
+	        
+			</ul>
+		</nav>
+		<nav class="header-smart-menu">
+	        
+    		
+    			
+    			<a class="js-smart-menu" data-idx="0" href="javascript:void(0)">所有文章</a>
+    			
+    			
+            
+    			
+    			<a class="js-smart-menu" data-idx="1" href="javascript:void(0)">标签</a>
+    			
+    			
+            
+    			
+    			<a class="js-smart-menu" data-idx="2" href="javascript:void(0)">友链</a>
+    			
+    			
+            
+    			
+    			<a class="js-smart-menu" data-idx="3" href="javascript:void(0)">关于我</a>
+    			
+    			
+            
+		</nav>
+		<nav class="header-nav">
+			<div class="social">
+				
+					<a class="github" target="_blank" href="https://github.com/PerezYuan" title="github">github</a>
+		        
+					<a class="weibo" target="_blank" href="http://weibo.com/u/2193947000" title="weibo">weibo</a>
+		        
+			</div>
+		</nav>
+	</header>		
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"><i class="icon-list"></i></div>
+  		<h1 class="header-author js-mobile-header hide">PerezYuan</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+				
+					<img src="/author.jpg" class="js-avatar">
+				
+			</div>
+			<hgroup>
+			  <h1 class="header-author">PerezYuan</h1>
+			</hgroup>
+			
+			<p class="header-subtitle">元気を出して大いにやる</p>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="http://www.yzmspirit.com/">主页</a></li>
+		        
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/PerezYuan" title="github">github</a>
+			        
+						<a class="weibo" target="_blank" href="http://weibo.com/u/2193947000" title="weibo">weibo</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+
+      <div class="body-wrap">
+        <article id="post-HTTPS应用&amp;TLS握手机制" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      HTTPS应用&amp;TLS握手机制
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>HTTPS，顾名思义，就是HTTP+S，而这个S是什么呢，它在HTTP的基础上有了什么变化，为什么需要HTTPS呢，就是本篇要讨论的东西了  </p>
+<p><br><br><br><br>我是一条可爱的分割线</p>
+<hr>
+<p><br><br><br></p>
+<blockquote>
+<p>首先我们来说一下这个S是什么？</p>
+</blockquote>
+<p>S是指TLS安全协议，是在安全套接字SSL协议的基础上发展而来的，HTTP应用协议一起使用，相对于HTTP来说，给网络资源提供了一层保护层，保障万维网访问的安全性</p>
+<h4 id="一、TLS工作的协议层"><a href="#一、TLS工作的协议层" class="headerlink" title="一、TLS工作的协议层"></a>一、TLS工作的协议层</h4><ul>
+<li>在TCP/IP五层网络模型中，相当于在传输层和应用层之间加入了一层  </li>
+<li>在ISO七层网络模型中，相当于表示层，在服务器和客户端之间协商一层数据密文传输和解析的方式</li>
+</ul>
+<p><img src="https://tinashy-1256534403.cos.ap-chengdu.myqcloud.com/TLS%3ASSL%E6%89%80%E5%9C%A8%E7%9A%84%E5%8D%8F%E8%AE%AE%E5%B1%82.png" alt="TLS工作的协议层"></p>
+<h4 id="二、TLS层的作用"><a href="#二、TLS层的作用" class="headerlink" title="二、TLS层的作用"></a>二、TLS层的作用</h4><p>TLS层主要解决两个问题：</p>
+<ul>
+<li>验证服务器的身份：服务器通过TLS层向客户端传递<a href="#da">数字证书</a>（点击可以查看介绍），客户端查验证书，可以知道与它通讯的服务器是不是别人冒充的。</li>
+<li>保证传递信息的保密性：双方通过TLS层，约定对称加密算法和密钥，传输层传输的是密文，可以防止信息被中途窃听。</li>
+</ul>
+<h4 id="三、TLS的工作原理"><a href="#三、TLS的工作原理" class="headerlink" title="三、TLS的工作原理"></a>三、TLS的工作原理</h4><p>为了解决以上问题，TLS的工作过程可以分为两个阶段：</p>
+<ul>
+<li><p>服务端客户端say hello的阶段 – 验证服务器的身份</p>
+<ol>
+<li><p>client向server发出建立连接的请求（<a href="http://www.yzmspirit.com）,并一同发送一个client产生的随机数A，用于后面产生密钥的参数，以及client支持的散列算法和对称加密算法" target="_blank" rel="noopener">www.yzmspirit.com）,并一同发送一个client产生的随机数A，用于后面产生密钥的参数，以及client支持的散列算法和对称加密算法</a></p>
+</li>
+<li><p>server收到连接请求后，也产生一个随机数B，发送给client，并选择一对server也支持的散列算法和对称加密算法，一起告知client</p>
+</li>
+<li><p>server发送通过CA申请的证书给client，client验证证书的真实性，包括  </p>
+<ul>
+<li>通过证书的CA数字签名检查证书信息有没有被篡改或者替换</li>
+<li>证书是否在有效期内</li>
+<li>证书的申请者信息和domain域是否和server匹配  </li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br></pre></td><td class="code"><pre><span class="line">    验证通过，说明server身份真实，可以建立连接</span><br><span class="line"></span><br><span class="line">    验证不通过，将不会继续接下来的工作，通过消息提示等告知用户server的身份很可疑</span><br><span class="line">    ``` </span><br><span class="line">    5. 证书验证通过后，server通知客户端server_hello信息，表示hello阶段结束</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">至此，验证服务器身份的阶段完成了，接下来可以交流深层次的东西了，那当然就是密钥啦</span><br><span class="line">  </span><br><span class="line">* 产生密钥，交换密钥和验证密钥的阶段  --  传递信息的保密性</span><br><span class="line"></span><br><span class="line">    1. server的证书里包含了server非对称加密密钥里的公钥，（常用的就是RSA非对称加密算法）client再次生成一个产生密钥的参数，就是随机数C，用公钥加密后，传递给server，server收到后用自己的私钥解密就得到了随机数C，这就保证了密钥参数里有一个的传递是保密的，不被窃听的，至于非对称加密怎么保证数据的安全性，文后的&lt;a href=&quot;#sa&quot;&gt;加密算法&lt;/a&gt;有介绍  </span><br><span class="line"></span><br><span class="line">    2. client通知server接下来交互的信息就要用约定的散列算法和加密算法处理信息了</span><br><span class="line"></span><br><span class="line">    3. client用随机数A,B,C作为参数，用hello阶段与server约定好的加密算法的密钥生成方法，产生对称密钥Secret_key</span><br><span class="line">    ，再用上述产生的所有参数和一些信息用约定的散列算法生成摘要H1，用密钥Secret_key加密H1后，发送给server，server用同样的方式生成对称密钥和摘要H2，解密收到的加密摘要H1，与H2对比，如果相等，说明生成的密钥可以正常使用，在加密传输的情况下，client发送正常，server接受正常</span><br><span class="line"></span><br><span class="line">    4. server也回复client，接下来交互的信息就要用约定的散列算法和加密算法处理信息了</span><br><span class="line"></span><br><span class="line">    5. server再次用上述产生的所有参数和一些信息用约定的散列算法生成摘要H3，用对称密钥加密H3后，发送给client，client用同样的方式验证，验证通过证明在加密传输的情况下，server发送正常，client也接受正常</span><br><span class="line"></span><br><span class="line">至此，产生密钥，交换密钥和验证密钥的阶段的阶段也完成了，TLS的握手工作也就完成了  </span><br><span class="line"></span><br><span class="line">接下来，当然就是server和client通过对称密钥愉快而又隐私的通信了</span><br><span class="line"></span><br><span class="line">![TLS握手机制图解](https://tinashy-1256534403.cos.ap-chengdu.myqcloud.com/TLS%E7%9A%84%E5%B7%A5%E4%BD%9C%E6%9C%BA%E5%88%B6.png)</span><br><span class="line"></span><br><span class="line">&gt; HTTP和TLS是怎么配合工作的呢？</span><br><span class="line"></span><br><span class="line">HTTPS其实就是HTTP与TLS配合工作的产物，以下两点可以说明：</span><br><span class="line"></span><br><span class="line">* 上一节介绍了TLS的握手机制，其实就是代替了HTTP的三次握手阶段，TLS的握手加入了证书的验证，和密钥的产生，所以才让HTTPS有了安全可言</span><br><span class="line">* TLS的握手阶段结束后，双方通信的方式就是HTTP协议了，只不过HTTP包里的实际数据内容是对称密钥加密后的密文，多了一个加密解密的过程</span><br><span class="line"></span><br><span class="line">&gt; 为什么需要HTTPS，与HTTP的区别是什么呢？</span><br><span class="line"></span><br><span class="line">* HTTPS比HTTP更安全，建立在需要验证服务器身份和传递密文的基础上</span><br><span class="line"></span><br><span class="line">* 但是正因为TLS做了很多额外的工作，HTTPS的建立连接和信息交互比HTTP更耗时，所以建议在需要安全性和保密性的网络服务上使用</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&gt; 附录</span><br><span class="line"></span><br><span class="line">&lt;span id=&quot;ds&quot;&gt;&lt;/span&gt; </span><br><span class="line">### 数字签名  </span><br><span class="line"></span><br><span class="line">* 数字签名的作用  </span><br><span class="line">&amp;ensp;&amp;ensp;验证发送的信息中涂没有被篡改过，注意：信息没有加密，并不保证信息保密信息，如果信息需要保密，可以再全部加密后发送</span><br><span class="line"></span><br><span class="line">* 数字签名的工作过程</span><br><span class="line"></span><br><span class="line">![数字签名的工作图解](https://tinashy-1256534403.cos.ap-chengdu.myqcloud.com/%E6%95%B0%E5%AD%97%E7%AD%BE%E5%90%8D.png)</span><br><span class="line"></span><br><span class="line">    1. 摘要（单向散列函数获取消息的散列值）和消息，一起用接收者的公钥加密后，发送</span><br><span class="line">    2. 接收者用自己的私钥解密，计算消息的摘要（用同样的单向散列函数），和正文消息比对有无被篡改</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&lt;span id=&quot;da&quot;&gt;&lt;/span&gt; </span><br><span class="line">### 数字证书  </span><br><span class="line"></span><br><span class="line">&amp;ensp;&amp;ensp;要了解数字证书，首先得了解&lt;a href=&quot;#ds&quot;&gt;数字签名&lt;/a&gt;</span><br><span class="line"></span><br><span class="line">* 数字证书的作用  </span><br><span class="line">&amp;ensp;&amp;ensp;验证发送者的身份和发送者的公钥可靠性</span><br><span class="line"></span><br><span class="line">* 数字证书的工作过程</span><br><span class="line"></span><br><span class="line">![数字证书的工作图解](https://tinashy-1256534403.cos.ap-chengdu.myqcloud.com/%E6%95%B0%E5%AD%97%E8%AF%81%E4%B9%A6.png)</span><br><span class="line"></span><br><span class="line">    1. 申请者把公钥和申请信息一起发送给CA</span><br><span class="line">    2. CA验证申请信息后提取申请者公钥和信息的摘要，用私钥加密摘要，形成CA的数字签名附在申请者公钥和信息的后面，就产生了数字证书，返回给申请者</span><br><span class="line">    3. 申请者用CA的公钥解密数字证书，用同样的方式摘要信息，和解密信息对比，无误后此证书可用</span><br><span class="line">    4. 申请者发送信息时，把数字证书附在后面一起发送给对方，对方利用缓存的CA根证书找到解密这个证书的数字签名，验证成功后得到发送者的公钥和申请信息，浏览器检查申请信息公司名字正常也没过期没问题，那么就证实了发送者的公钥没有问题，确实是可用的公钥，你用公钥解密对方的信息，成功解密就说明对方的身份正常，你就可以与他交互了，其实就是认证文件和公钥确实出于对方</span><br><span class="line"></span><br><span class="line">&lt;span id=&quot;sa&quot;&gt;&lt;/span&gt;</span><br><span class="line">### 加密算法  </span><br><span class="line"></span><br><span class="line">* 非对称加密RSA  </span><br><span class="line"></span><br><span class="line">  1. 选择一对不同的、足够大的素数p，q</span><br><span class="line">  2. 计算n=pq</span><br><span class="line">  3. 计算n的欧拉函数f(n)=f(p*q)=f(p-1)f(q-1)，同时对p, q严加保密，不让任何人知道</span><br><span class="line">  4. 找一个与f(n)互质的数e，且1&lt;e&lt;f(n)</span><br><span class="line">  5. 计算d，使得de%f(n)=1</span><br><span class="line">  6. 公钥KU=(e,n)，私钥KR=(d,n)</span><br><span class="line">  7. 加密时，先将明文变换成0至n-1的一个整数M。若明文较长，可先分割成适当的组，然后再进行交换。设密文为C，则加密过程为：</span><br><span class="line">  C= M^e % n</span><br><span class="line">  8. 解密过程为：</span><br><span class="line">  M= C^d % n</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">* 对称加密AES  </span><br><span class="line"></span><br><span class="line">  1. 密钥扩散轮：初始密钥矩阵-&gt;列位移-&gt;列混淆映射-&gt;与常量列异或-&gt;与第一列异或得第一列-&gt;第一列与第二列异或得第二列-&gt;第三列与第三列异或得第三列-&gt;。。。-&gt;扩散成第二个密钥矩阵</span><br><span class="line">第二个密钥矩阵 -&gt; 重复以上步骤-&gt;扩散成第三密钥矩阵重复，中间轮多少次就扩散多少个密钥矩阵</span><br><span class="line"></span><br><span class="line">  2. 初始轮：</span><br><span class="line">初始原文-&gt;原文矩阵-&gt;与初始密码矩阵异或-&gt;初始轮结果</span><br><span class="line"></span><br><span class="line">  3. 中间轮：</span><br><span class="line">初始轮结果-&gt;混淆矩阵：替代字节-&gt;行位移-&gt;列混淆-&gt;第二个密码矩阵-&gt;第二轮结果</span><br><span class="line">重复n轮，n与密码矩阵长度相关，每轮用自己的密码矩阵 -&gt; 最后加密矩阵</span><br><span class="line"></span><br><span class="line">* 不可逆加密MD5  </span><br><span class="line"></span><br><span class="line">&amp;ensp;&amp;ensp;MD5加密的过程是：把原文通过一个单向的散列函数映射成定长的字符输出，就叫这个原文的MD5码，hash算法在计算的过程中会丢弃原文的部分信息。</span><br><span class="line"></span><br><span class="line">&amp;ensp;&amp;ensp;如果不同的原文产生了相同的MD5码，叫哈希碰撞，通过MD5码的长度来控制碰撞。</span><br><span class="line"></span><br><span class="line">&amp;ensp;&amp;ensp;MD5不可逆的原因是hash函数一个单向密码体制，只有加密过程没有解密过程。</span><br><span class="line"></span><br><span class="line">&amp;ensp;&amp;ensp;一般MD5码有128位2进制数，也就是有2^128种可能，理论上一个MD5是可以对应多个原文的，因为MD5是有限多个而原文是无限多个，这也是不可逆的原因之一，知道MD5码，绝不可能百分百确定原文。</span><br><span class="line"></span><br><span class="line">&amp;ensp;&amp;ensp;MD5一般都用来加密用户密码</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&gt; 补充整理：HTTP的三次握手和四次挥手</span><br><span class="line">* 三次握手  </span><br><span class="line">    1. client发送TCP头带SYN=1标志的数据包给server，带随机产生的序列号seq1，请求建立连接</span><br><span class="line">    </span><br><span class="line">    2. server接收后，发送TCP头带SYN=1，ACK=seq1+1，标志的数据包，带随机产生的序列号seq2，给client</span><br></pre></td></tr></table></figure>
+<p>验证client发送正常，server接受正常</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">3. client接收ACK后，发送TCP头带ACK=seq2+1标志的数据包给client</span><br></pre></td></tr></table></figure>
+<p>验证client接收正常，server发送正常</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">SYN=1代表请求建立连接，ACK代表确认收到的数据包序号+1  </span><br><span class="line"></span><br><span class="line">至此，三次握手才能验证client和server的发送接收都正常，接下来才可以开始正常的通信了</span><br><span class="line"></span><br><span class="line">* 四次挥手  </span><br><span class="line">    1. client发送TCP头带FIN=1标志的数据包给server，带随机产生的序列号seq3，单方面请求关闭client对server的连接</span><br><span class="line">    </span><br><span class="line">    2. server接收后，发送TCP头带ACK=seq3+1标志的数据包，给client</span><br></pre></td></tr></table></figure>
+<p>server确认client对server的话说完了，允许client关闭l，但是server对client的话还没说完，server单工发送给client，这种状态叫半关闭状态</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">3. server发送TCP头带FIN=1标志的数据包给client，带随机产生的序列号seq4，请求关闭server对client连接</span><br><span class="line"></span><br><span class="line">4. client接收后，发送TCP头带ACK=seq4+1标志的数据包，给server</span><br></pre></td></tr></table></figure>
+<p>client确认server对client的话说完了，允许server关闭，双方都关闭了，就是全关闭状态<br><code>`</code></p>
+</li>
+</ol>
+</li>
+</ul>
+<p>FIN=1代表请求关闭连接，ACK代表确认收到的数据包序号+1  </p>
+<p>至此，四次挥手才是双方都关闭了连接</p>
+<blockquote>
+<p>参考 </p>
+</blockquote>
+<p><a href="https://www.cnblogs.com/huanxiyun/articles/6554085.html" target="_blank" rel="noopener">HTTPS协议详解(四)：TLS/SSL握手过程</a></p>
+<p><a href="http://www.sohu.com/a/253770353_608959" target="_blank" rel="noopener">通俗理解数字签名，数字证书和https</a></p>
+<p><a href="https://www.jianshu.com/p/fbb8bf7baa97" target="_blank" rel="noopener">一文搞懂 RSA 算法</a></p>
+<p><a href="https://blog.csdn.net/striner/article/details/85107921" target="_blank" rel="noopener">十分钟读懂AES加密算法</a></p>
+<p><a href="https://blog.csdn.net/dawn_after_dark/article/details/54429766" target="_blank" rel="noopener">MD5算法可以破解么？为什么？网上有在线破解是怎么回事？</a></p>
+<p><a href="https://baijiahao.baidu.com/s?id=1618114723935605183&amp;wfr=spider&amp;for=pc" target="_blank" rel="noopener">TCP协议：三次握手过程详解</a></p>
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      <a href="/2019/07/08/HTTPS应用&TLS握手机制/" class="archive-article-date">
+  	<time datetime="2019-07-08T02:44:30.000Z" itemprop="datePublished"><i class="icon-clock"></i>Jul 8 2019</time>
+</a>
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags"></i>
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/http/">http</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<i class="icon-price-tags"></i>
+	<a class="article-category-link" href="/categories/前端技术/">前端技术</a>
+	</div>
+
+
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+  
+<nav id="article-nav">
+  
+  
+    <a href="/2017/07/25/最近/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">最近</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+
+
+<div class="share_jia">
+	<!-- JiaThis Button BEGIN -->
+	<div class="jiathis_style">
+		<span class="jiathis_txt">Share to: &nbsp; </span>
+		<a class="jiathis_button_facebook"></a> 
+	    <a class="jiathis_button_twitter"></a>
+	    <a class="jiathis_button_plus"></a> 
+	    <a class="jiathis_button_tsina"></a>
+		<a class="jiathis_button_cqq"></a>
+		<a class="jiathis_button_douban"></a>
+		<a class="jiathis_button_weixin"></a>
+		<a class="jiathis_button_tumblr"></a>
+    <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	</div>
+	<script type="text/javascript" src="//v3.jiathis.com/code/jia.js?uid=1405949716054953" charset="utf-8"></script>
+	<!-- JiaThis Button END -->
+</div>
+
+
+
+
+
+
+
+
+
+      </div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2019 PerezYuan
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    <script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: false,
+		animate: true,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: false,
+		root: "/",
+		innerArchive: true
+	}
+</script>
+
+<script src="/./main.js"></script>
+
+
+    
+<div class="tools-col">
+  <ul class="btn-wrap">
+    
+      <li class="chose" data-hook="tools-section-all"><span class="text">全部</span><i class="icon-book"></i></li>
+    
+    
+      <li data-hook="tools-section-tag"><span class="text">标签</span><i class="icon-price-tags"></i></li>
+    
+    
+      <li data-hook="tools-section-friends"><span class="text">友链</span><i class="icon-link"></i></li>
+    
+    
+      <li data-hook="tools-section-me"><span class="text">我</span><i class="icon-smile"></i></li>
+    
+  </ul>
+  <div class="tools-wrap">
+    
+    	<section class="tools-section tools-section-all chose">
+    	</section>
+    
+
+    
+    	<section class="tools-section tools-section-tag">
+    			<div class="widget tagcloud" id="js-tagcloud">
+    				<a href="/tags/CSS/" style="font-size: 13.33px;">CSS</a> <a href="/tags/ajax/" style="font-size: 10px;">ajax</a> <a href="/tags/delete/" style="font-size: 10px;">delete</a> <a href="/tags/es6/" style="font-size: 10px;">es6</a> <a href="/tags/express/" style="font-size: 10px;">express</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/http/" style="font-size: 16.67px;">http</a> <a href="/tags/js/" style="font-size: 20px;">js</a> <a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/node-js/" style="font-size: 10px;">node.js</a> <a href="/tags/this/" style="font-size: 13.33px;">this</a> <a href="/tags/vue/" style="font-size: 10px;">vue</a> <a href="/tags/云存储/" style="font-size: 10px;">云存储</a> <a href="/tags/拷贝/" style="font-size: 10px;">拷贝</a> <a href="/tags/构建工具/" style="font-size: 10px;">构建工具</a> <a href="/tags/移动端/" style="font-size: 13.33px;">移动端</a>
+    			</div>
+    	</section>
+    
+
+    
+    	<section class="tools-section tools-section-friends">
+  		
+  			<div class="friends-wrap" id="js-friends">
+  			
+  	          <a target="_blank" class="main-nav-link switch-friends-link" href="http://butsalt.me/">butsalt</a>
+  	        
+  	          <a target="_blank" class="main-nav-link switch-friends-link" href="https://github.com/amnhh/amnhh.github.io/issues">amnhh</a>
+  	        
+  	        </div>
+  		
+    	</section>
+    
+
+    
+    	<section class="tools-section tools-section-me">
+  	  	
+  	  		<div class="aboutme-wrap" id="js-aboutme">热爱前端&lt;br&gt;&lt;br&gt;热爱绘画</div>
+  	  	
+    	</section>
+    
+  </div>
+  
+</div>
+    <!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+  </div>
+</body>
+</html>

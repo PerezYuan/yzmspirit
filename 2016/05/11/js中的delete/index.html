@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="dns-prefetch" href="http://blog.fens.me">
+  <title>js中的delete | Spirit</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="在上一次的code review中，发现了一个delete的问题，在写代码的过程中只是随手写了一个delete方法，却是完全不合理的用法。 首先，delete删除成功返回true，失败返回false。">
+<meta name="keywords" content="js,delete">
+<meta property="og:type" content="article">
+<meta property="og:title" content="js中的delete">
+<meta property="og:url" content="http://blog.fens.me/2016/05/11/js中的delete/index.html">
+<meta property="og:site_name" content="Spirit">
+<meta property="og:description" content="在上一次的code review中，发现了一个delete的问题，在写代码的过程中只是随手写了一个delete方法，却是完全不合理的用法。 首先，delete删除成功返回true，失败返回false。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-07-07T13:07:25.202Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="js中的delete">
+<meta name="twitter:description" content="在上一次的code review中，发现了一个delete的问题，在写代码的过程中只是随手写了一个delete方法，却是完全不合理的用法。 首先，delete删除成功返回true，失败返回false。">
+  
+    <link rel="alternative" href="/atom.xml" title="Spirit" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="stylesheet" href="/main.css">
+  
+
+</head>
+</html>
+<body>
+  <div id="container">
+    <div class="left-col">
+      <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img src="/author.jpg" class="js-avatar">
+			
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">PerezYuan</a></h1>
+		</hgroup>
+
+		
+		<p class="header-subtitle">元気を出して大いにやる</p>
+		
+
+		<nav class="header-menu">
+			<ul>
+			
+				<li><a href="http://www.yzmspirit.com/">主页</a></li>
+	        
+			</ul>
+		</nav>
+		<nav class="header-smart-menu">
+	        
+    		
+    			
+    			<a class="js-smart-menu" data-idx="0" href="javascript:void(0)">所有文章</a>
+    			
+    			
+            
+    			
+    			<a class="js-smart-menu" data-idx="1" href="javascript:void(0)">标签</a>
+    			
+    			
+            
+    			
+    			<a class="js-smart-menu" data-idx="2" href="javascript:void(0)">友链</a>
+    			
+    			
+            
+    			
+    			<a class="js-smart-menu" data-idx="3" href="javascript:void(0)">关于我</a>
+    			
+    			
+            
+		</nav>
+		<nav class="header-nav">
+			<div class="social">
+				
+					<a class="github" target="_blank" href="https://github.com/PerezYuan" title="github">github</a>
+		        
+					<a class="weibo" target="_blank" href="http://weibo.com/u/2193947000" title="weibo">weibo</a>
+		        
+			</div>
+		</nav>
+	</header>		
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"><i class="icon-list"></i></div>
+  		<h1 class="header-author js-mobile-header hide">PerezYuan</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+				
+					<img src="/author.jpg" class="js-avatar">
+				
+			</div>
+			<hgroup>
+			  <h1 class="header-author">PerezYuan</h1>
+			</hgroup>
+			
+			<p class="header-subtitle">元気を出して大いにやる</p>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="http://www.yzmspirit.com/">主页</a></li>
+		        
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/PerezYuan" title="github">github</a>
+			        
+						<a class="weibo" target="_blank" href="http://weibo.com/u/2193947000" title="weibo">weibo</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+
+      <div class="body-wrap">
+        <article id="post-js中的delete" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      js中的delete
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在上一次的code review中，发现了一个delete的问题，在写代码的过程中只是随手写了一个delete方法，却是完全不合理的用法。</p>
+<p>首先，<code>delete</code>删除成功返回<code>true</code>，失败返回<code>false</code>。<br><a id="more"></a></p>
+<h4 id="js代码："><a href="#js代码：" class="headerlink" title="js代码："></a>js代码：</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">wxCount</span> (<span class="params">$element</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.init($element);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">wxCount.prototype = &#123;</span><br><span class="line">    init : <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;...&#125;, <span class="comment">//初始化方法</span></span><br><span class="line">    count ： <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;...&#125;, <span class="comment">//计算方法</span></span><br><span class="line">    destroy ： <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">      <span class="keyword">delete</span> <span class="keyword">this</span>;</span><br><span class="line">    &#125; <span class="comment">//删除方法</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>仔细一看便知，这里的<code>this</code>指向的是<code>function wxCount()</code>，而在javascript中，<code>delete</code>是无法删除一般的变量或者<code>function</code>的，永远都会返回<code>false</code>。</p>
+<h4 id="example："><a href="#example：" class="headerlink" title="example："></a>example：</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">&lt;script type=<span class="string">"text/javascript"</span>&gt;</span><br><span class="line">    x = <span class="number">1</span>;         <span class="comment">// 创建全局属性x</span></span><br><span class="line">    <span class="keyword">var</span> y = <span class="number">2</span>;     <span class="comment">// var声明，y为变量</span></span><br><span class="line">    obj = &#123;</span><br><span class="line">	a : <span class="number">3</span>,</span><br><span class="line">	b : <span class="number">4</span></span><br><span class="line">    &#125;;              <span class="comment">// 创建全局对象obj，并有a和b两个成员变量</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">delete</span> x;       <span class="comment">// returns true</span></span><br><span class="line">               </span><br><span class="line">    <span class="keyword">delete</span> y;       <span class="comment">// returns false </span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">delete</span> <span class="built_in">Math</span>.PI; <span class="comment">// returns false </span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">delete</span> obj.a; <span class="comment">// returns true </span></span><br><span class="line">    <span class="keyword">delete</span> obj.b; <span class="comment">// returns true </span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">delete</span> obj;   <span class="comment">// returns true</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">f</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">var</span> z = <span class="number">5</span>;</span><br><span class="line">        <span class="keyword">var</span> obj2 = &#123;</span><br><span class="line">            c : <span class="number">6</span>,</span><br><span class="line">            d : <span class="number">7</span></span><br><span class="line">        &#125;</span><br><span class="line">        obj3 = &#123;</span><br><span class="line">            e : <span class="number">8</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">delete</span> z;     <span class="comment">// returns false</span></span><br><span class="line">        <span class="keyword">delete</span> obj2;     <span class="comment">// returns false</span></span><br><span class="line">        <span class="keyword">delete</span> obj2.c;     <span class="comment">// returns true</span></span><br><span class="line">        <span class="keyword">delete</span> obj3;     <span class="comment">// returns true</span></span><br><span class="line">    &#125;</span><br><span class="line">&lt;<span class="regexp">/script&gt;</span></span><br></pre></td></tr></table></figure>
+<p>大多数情况下可以理解为：<strong>通过变量或者函数声明的属性不能删除</strong>。</p>
+<h3 id="下面对几种情况进行简单分析"><a href="#下面对几种情况进行简单分析" class="headerlink" title="下面对几种情况进行简单分析"></a>下面对几种情况进行简单分析</h3><h4 id="1-全局属性可以删除"><a href="#1-全局属性可以删除" class="headerlink" title="1.全局属性可以删除"></a>1.全局属性可以删除</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">x = <span class="number">150</span>;</span><br><span class="line"><span class="keyword">delete</span> x; <span class="comment">//return true</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">f</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    obj = &#123;</span><br><span class="line">        a : <span class="number">2</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">delete</span> obj; <span class="comment">//return true</span></span><br></pre></td></tr></table></figure>
+<p><code>x</code>可以理解为全局对象<code>GLOBAL</code>的一个属性，即<code>GLOBAL.x</code>，可以删除成功。函数中的<code>obj</code>也被置为全局属性，同理。</p>
+<h4 id="2-通过var或者function声明的属性不能删除"><a href="#2-通过var或者function声明的属性不能删除" class="headerlink" title="2.通过var或者function声明的属性不能删除"></a>2.通过<code>var</code>或者<code>function</code>声明的属性不能删除</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> x = <span class="number">150</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">delete</span> x; <span class="comment">//return fale</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">y</span>(<span class="params"></span>) </span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">delete</span> y; <span class="comment">//return false</span></span><br></pre></td></tr></table></figure>
+<h3 id="3-内置的属性不能删除"><a href="#3-内置的属性不能删除" class="headerlink" title="3.内置的属性不能删除"></a>3.内置的属性不能删除</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">delete</span> <span class="built_in">Math</span>.PI <span class="comment">//reuturn false</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> (<span class="params">param</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">delete</span> param; <span class="comment">//return false</span></span><br><span class="line">    <span class="built_in">console</span>.log(param); <span class="comment">//1</span></span><br><span class="line">&#125;(<span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+<h3 id="4-原型上的属性"><a href="#4-原型上的属性" class="headerlink" title="4.原型上的属性"></a>4.原型上的属性</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">People</span>(<span class="params"></span>)</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">People.prototype.age = <span class="number">18</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> Perez = <span class="keyword">new</span> People();</span><br><span class="line">Perez.age = <span class="number">100</span>;</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(Perez.age); <span class="comment">//100</span></span><br><span class="line"><span class="keyword">delete</span> Perez.age; <span class="comment">//return ture</span></span><br><span class="line"><span class="built_in">console</span>.log(Perez.age); <span class="comment">//18</span></span><br><span class="line"><span class="comment">//返回成功但是并没有什么用，Perez还是会继承原型上的age属性</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">delete</span> People.prototype.age;</span><br><span class="line"><span class="built_in">console</span>.log(Perez.age); <span class="comment">//undefined</span></span><br></pre></td></tr></table></figure>
+<h3 id="5-删除数组中元素"><a href="#5-删除数组中元素" class="headerlink" title="5.删除数组中元素"></a>5.删除数组中元素</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> ipr = [<span class="string">"zhong"</span>,<span class="string">"du"</span>,<span class="string">"sun"</span>,<span class="string">"an"</span>,<span class="string">"yuan"</span>];</span><br><span class="line"></span><br><span class="line"><span class="keyword">delete</span> ipr[<span class="number">4</span>];  <span class="comment">//return true</span></span><br><span class="line"><span class="built_in">console</span>.log(ipr);  <span class="comment">//["zhong","du","sun","an"]</span></span><br><span class="line"><span class="built_in">console</span>.log(ipr.length);  <span class="comment">//5</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="number">4</span> <span class="keyword">in</span> ipr);  <span class="comment">//false</span></span><br><span class="line"><span class="built_in">console</span>.log(ipr[<span class="number">4</span>]);  <span class="comment">//undefined</span></span><br></pre></td></tr></table></figure>
+<p>删除数组中元素，数组长度不会发生变化，但是元素实际不存在数组中了。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> ipr = [<span class="string">"zhong"</span>,<span class="string">"du"</span>,<span class="string">"sun"</span>,<span class="string">"an"</span>,<span class="literal">undefined</span>];</span><br><span class="line"><span class="built_in">console</span>.log(<span class="number">4</span> <span class="keyword">in</span> ipr);  <span class="comment">//ture</span></span><br></pre></td></tr></table></figure>
+<p>如果将最后个元素置为undefined，实际还是存在数组中。</p>
+<p>关于delete更深的问题和兼容性问题，可以参考<br><a href="http://blog.csdn.net/renfufei/article/details/18965545" title="深入理解JS的delete" target="_blank" rel="noopener">深入理解JS的delete</a></p>
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      <a href="/2016/05/11/js中的delete/" class="archive-article-date">
+  	<time datetime="2016-05-11T08:25:36.000Z" itemprop="datePublished"><i class="icon-clock"></i>May 11 2016</time>
+</a>
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags"></i>
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/delete/">delete</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/js/">js</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<i class="icon-price-tags"></i>
+	<a class="article-category-link" href="/categories/前端技术/">前端技术</a>
+	</div>
+
+
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+  
+<nav id="article-nav">
+  
+    <a href="/2016/05/16/javascript深拷贝和浅拷贝的思考/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          javascript深拷贝和浅拷贝的思考
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/04/22/一个开始而已/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">一个开始而已</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+
+
+<div class="share_jia">
+	<!-- JiaThis Button BEGIN -->
+	<div class="jiathis_style">
+		<span class="jiathis_txt">Share to: &nbsp; </span>
+		<a class="jiathis_button_facebook"></a> 
+	    <a class="jiathis_button_twitter"></a>
+	    <a class="jiathis_button_plus"></a> 
+	    <a class="jiathis_button_tsina"></a>
+		<a class="jiathis_button_cqq"></a>
+		<a class="jiathis_button_douban"></a>
+		<a class="jiathis_button_weixin"></a>
+		<a class="jiathis_button_tumblr"></a>
+    <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	</div>
+	<script type="text/javascript" src="//v3.jiathis.com/code/jia.js?uid=1405949716054953" charset="utf-8"></script>
+	<!-- JiaThis Button END -->
+</div>
+
+
+
+
+
+
+
+
+
+      </div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2019 PerezYuan
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    <script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: false,
+		animate: true,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: false,
+		root: "/",
+		innerArchive: true
+	}
+</script>
+
+<script src="/./main.js"></script>
+
+
+    
+<div class="tools-col">
+  <ul class="btn-wrap">
+    
+      <li class="chose" data-hook="tools-section-all"><span class="text">全部</span><i class="icon-book"></i></li>
+    
+    
+      <li data-hook="tools-section-tag"><span class="text">标签</span><i class="icon-price-tags"></i></li>
+    
+    
+      <li data-hook="tools-section-friends"><span class="text">友链</span><i class="icon-link"></i></li>
+    
+    
+      <li data-hook="tools-section-me"><span class="text">我</span><i class="icon-smile"></i></li>
+    
+  </ul>
+  <div class="tools-wrap">
+    
+    	<section class="tools-section tools-section-all chose">
+    	</section>
+    
+
+    
+    	<section class="tools-section tools-section-tag">
+    			<div class="widget tagcloud" id="js-tagcloud">
+    				<a href="/tags/CSS/" style="font-size: 13.33px;">CSS</a> <a href="/tags/ajax/" style="font-size: 10px;">ajax</a> <a href="/tags/delete/" style="font-size: 10px;">delete</a> <a href="/tags/es6/" style="font-size: 10px;">es6</a> <a href="/tags/express/" style="font-size: 10px;">express</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/http/" style="font-size: 16.67px;">http</a> <a href="/tags/js/" style="font-size: 20px;">js</a> <a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/node-js/" style="font-size: 10px;">node.js</a> <a href="/tags/this/" style="font-size: 13.33px;">this</a> <a href="/tags/vue/" style="font-size: 10px;">vue</a> <a href="/tags/云存储/" style="font-size: 10px;">云存储</a> <a href="/tags/拷贝/" style="font-size: 10px;">拷贝</a> <a href="/tags/构建工具/" style="font-size: 10px;">构建工具</a> <a href="/tags/移动端/" style="font-size: 13.33px;">移动端</a>
+    			</div>
+    	</section>
+    
+
+    
+    	<section class="tools-section tools-section-friends">
+  		
+  			<div class="friends-wrap" id="js-friends">
+  			
+  	          <a target="_blank" class="main-nav-link switch-friends-link" href="http://butsalt.me/">butsalt</a>
+  	        
+  	          <a target="_blank" class="main-nav-link switch-friends-link" href="https://github.com/amnhh/amnhh.github.io/issues">amnhh</a>
+  	        
+  	        </div>
+  		
+    	</section>
+    
+
+    
+    	<section class="tools-section tools-section-me">
+  	  	
+  	  		<div class="aboutme-wrap" id="js-aboutme">热爱前端&lt;br&gt;&lt;br&gt;热爱绘画</div>
+  	  	
+    	</section>
+    
+  </div>
+  
+</div>
+    <!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+  </div>
+</body>
+</html>

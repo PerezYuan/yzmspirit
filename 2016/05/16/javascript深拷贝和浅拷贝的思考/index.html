@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="dns-prefetch" href="http://blog.fens.me">
+  <title>javascript深拷贝和浅拷贝的思考 | Spirit</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="在做一个数据对象的时候需要拷贝一下对象，突然想到以前在js中存在的深拷贝和浅拷贝，这里复习一下也想深究一下。首先看一段代码 123var obj = &amp;#123; a : 1, arr: [1,2]&amp;#125;var obj1 = obj;            //浅拷贝var obj2 = deepCopy(obj);  //深拷贝">
+<meta name="keywords" content="js,拷贝">
+<meta property="og:type" content="article">
+<meta property="og:title" content="javascript深拷贝和浅拷贝的思考">
+<meta property="og:url" content="http://blog.fens.me/2016/05/16/javascript深拷贝和浅拷贝的思考/index.html">
+<meta property="og:site_name" content="Spirit">
+<meta property="og:description" content="在做一个数据对象的时候需要拷贝一下对象，突然想到以前在js中存在的深拷贝和浅拷贝，这里复习一下也想深究一下。首先看一段代码 123var obj = &amp;#123; a : 1, arr: [1,2]&amp;#125;var obj1 = obj;            //浅拷贝var obj2 = deepCopy(obj);  //深拷贝">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://blog.fens.me/img/20160519.jpg">
+<meta property="og:updated_time" content="2019-07-07T13:07:25.202Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="javascript深拷贝和浅拷贝的思考">
+<meta name="twitter:description" content="在做一个数据对象的时候需要拷贝一下对象，突然想到以前在js中存在的深拷贝和浅拷贝，这里复习一下也想深究一下。首先看一段代码 123var obj = &amp;#123; a : 1, arr: [1,2]&amp;#125;var obj1 = obj;            //浅拷贝var obj2 = deepCopy(obj);  //深拷贝">
+<meta name="twitter:image" content="http://blog.fens.me/img/20160519.jpg">
+  
+    <link rel="alternative" href="/atom.xml" title="Spirit" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="stylesheet" href="/main.css">
+  
+
+</head>
+</html>
+<body>
+  <div id="container">
+    <div class="left-col">
+      <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img src="/author.jpg" class="js-avatar">
+			
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">PerezYuan</a></h1>
+		</hgroup>
+
+		
+		<p class="header-subtitle">元気を出して大いにやる</p>
+		
+
+		<nav class="header-menu">
+			<ul>
+			
+				<li><a href="http://www.yzmspirit.com/">主页</a></li>
+	        
+			</ul>
+		</nav>
+		<nav class="header-smart-menu">
+	        
+    		
+    			
+    			<a class="js-smart-menu" data-idx="0" href="javascript:void(0)">所有文章</a>
+    			
+    			
+            
+    			
+    			<a class="js-smart-menu" data-idx="1" href="javascript:void(0)">标签</a>
+    			
+    			
+            
+    			
+    			<a class="js-smart-menu" data-idx="2" href="javascript:void(0)">友链</a>
+    			
+    			
+            
+    			
+    			<a class="js-smart-menu" data-idx="3" href="javascript:void(0)">关于我</a>
+    			
+    			
+            
+		</nav>
+		<nav class="header-nav">
+			<div class="social">
+				
+					<a class="github" target="_blank" href="https://github.com/PerezYuan" title="github">github</a>
+		        
+					<a class="weibo" target="_blank" href="http://weibo.com/u/2193947000" title="weibo">weibo</a>
+		        
+			</div>
+		</nav>
+	</header>		
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"><i class="icon-list"></i></div>
+  		<h1 class="header-author js-mobile-header hide">PerezYuan</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+				
+					<img src="/author.jpg" class="js-avatar">
+				
+			</div>
+			<hgroup>
+			  <h1 class="header-author">PerezYuan</h1>
+			</hgroup>
+			
+			<p class="header-subtitle">元気を出して大いにやる</p>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="http://www.yzmspirit.com/">主页</a></li>
+		        
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/PerezYuan" title="github">github</a>
+			        
+						<a class="weibo" target="_blank" href="http://weibo.com/u/2193947000" title="weibo">weibo</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+
+      <div class="body-wrap">
+        <article id="post-javascript深拷贝和浅拷贝的思考" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      javascript深拷贝和浅拷贝的思考
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在做一个数据对象的时候需要拷贝一下对象，突然想到以前在js中存在的深拷贝和浅拷贝，这里复习一下也想深究一下。<br><strong>首先看一段代码</strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> obj = &#123; <span class="attr">a</span> : <span class="number">1</span>, <span class="attr">arr</span>: [<span class="number">1</span>,<span class="number">2</span>]&#125;</span><br><span class="line"><span class="keyword">var</span> obj1 = obj;            <span class="comment">//浅拷贝</span></span><br><span class="line"><span class="keyword">var</span> obj2 = deepCopy(obj);  <span class="comment">//深拷贝</span></span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<p>js是把<strong>对象</strong>和<strong>数组</strong>存储在某一块内存区域的，所以浅拷贝会将<code>obj</code>和<code>obj1</code>指向同一块内存地址。而深拷贝一般都是开辟一块新的内存地址，将原对象的各个属性逐个复制出去。简单图示如下（图转自知乎）：</p>
+<img src="/img/20160519.jpg" width="600" height="225" title="这是一张图片">
+<p>那么就很容易理解如下代码了<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">obj.a = <span class="number">10</span>;</span><br><span class="line"><span class="built_in">console</span>.log(obj1.a); <span class="comment">//输出10</span></span><br><span class="line"><span class="built_in">console</span>.log(obj2.a); <span class="comment">//输出1</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="介绍一些简单的解决深拷贝的方法。"><a href="#介绍一些简单的解决深拷贝的方法。" class="headerlink" title="介绍一些简单的解决深拷贝的方法。"></a>介绍一些简单的解决深拷贝的方法。</h2><h4 id="1-单纯的数组可以使用slice-方法进行拷贝"><a href="#1-单纯的数组可以使用slice-方法进行拷贝" class="headerlink" title="1.单纯的数组可以使用slice()方法进行拷贝"></a>1.单纯的数组可以使用slice()方法进行拷贝</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> arr = [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>];</span><br><span class="line"><span class="keyword">var</span> arr2 = arr;</span><br><span class="line"><span class="keyword">var</span> arr3 = arr.slice(<span class="number">0</span>);</span><br><span class="line">arr[<span class="number">4</span>] = <span class="number">5656565</span>;</span><br><span class="line"><span class="built_in">console</span>.log(arr);     <span class="comment">//[1,2,3,4,5656565]</span></span><br><span class="line"><span class="built_in">console</span>.log(arr2);    <span class="comment">//[1,2,3,4,5656565]</span></span><br><span class="line"><span class="built_in">console</span>.log(arr3);    <span class="comment">//[1,2,3,4,5]</span></span><br></pre></td></tr></table></figure>
+<h4 id="2-借助JSON全局对象"><a href="#2-借助JSON全局对象" class="headerlink" title="2.借助JSON全局对象"></a>2.借助JSON全局对象</h4><p>针对纯的JSON对象拷贝可以使用<code>JSON.stringify</code>和<code>JSON.parse</code>方法，原理也很简单，将对象转换为JSON字符串在重新序列化一下。这是一个简单讨巧的方法。但是这个方法只能针对诸如<code>Number</code>, <code>String</code>, <code>Boolean</code>, <code>Array</code>, 扁平对象等，对如<code>Date</code>，<code>RegExp</code>这类对象并不适用。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">jsonClone</span>(<span class="params">obj</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">JSON</span>.parse(<span class="built_in">JSON</span>.stringify(obj));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="3-利用jQuery的-extend-方法"><a href="#3-利用jQuery的-extend-方法" class="headerlink" title="3.利用jQuery的$.extend()方法"></a>3.利用jQuery的$.extend()方法</h4><p>jQuery的<code>$.extend()</code>可以将多个对象合并并返回合并后的对象，我们可以将需要拷贝的数据和<code>{}</code>进行合并。值得注意的是当出现嵌套对象的情况下，<code>$.extend()</code>提供了第一个参数来进行递归的深拷贝。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> people = &#123;</span><br><span class="line">    name : <span class="string">'perez'</span>,</span><br><span class="line">    age : <span class="number">26</span>,</span><br><span class="line">    friends : &#123;</span><br><span class="line">        people : &#123;</span><br><span class="line">            name : <span class="string">'butsalt'</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">var</span> people2 = $.extend(&#123;&#125;,people);</span><br><span class="line"><span class="keyword">var</span> people3 = $.extend(<span class="literal">true</span>,&#123;&#125;,people);</span><br><span class="line"> </span><br><span class="line">people.friends.people.name = <span class="string">'butsaltme'</span>;</span><br><span class="line"><span class="built_in">console</span>.log(people2.friends.people.name); <span class="comment">//butsaltme</span></span><br><span class="line"> </span><br><span class="line"><span class="built_in">console</span>.log(people.friends.people === people2.friends.people);  <span class="comment">//true</span></span><br><span class="line"><span class="built_in">console</span>.log(people.friends.people === people3.friends.people);  <span class="comment">//false</span></span><br></pre></td></tr></table></figure>
+<hr>
+<p>网上有段如下代码，能解决大多数情况。<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> cloneObj = <span class="function"><span class="keyword">function</span>(<span class="params">obj</span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> str, newobj = obj.constructor === <span class="built_in">Array</span> ? [] : &#123;&#125;;</span><br><span class="line">    <span class="keyword">if</span>(<span class="keyword">typeof</span> obj !== <span class="string">'object'</span>)&#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span>(<span class="built_in">window</span>.JSON)&#123;</span><br><span class="line">        str = <span class="built_in">JSON</span>.stringify(obj), <span class="comment">//系列化对象</span></span><br><span class="line">        newobj = <span class="built_in">JSON</span>.parse(str); <span class="comment">//还原</span></span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">var</span> i <span class="keyword">in</span> obj)&#123;</span><br><span class="line">            newobj[i] = <span class="keyword">typeof</span> obj[i] === <span class="string">'object'</span> ? </span><br><span class="line">            cloneObj(obj[i]) : obj[i]; </span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> newobj;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p>参考资料：<a href="http://jerryzou.com/posts/dive-into-deep-clone-in-javascript/" title="深入剖析 JavaScript 的深复制" target="_blank" rel="noopener">深入剖析 JavaScript 的深复制</a></p>
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      <a href="/2016/05/16/javascript深拷贝和浅拷贝的思考/" class="archive-article-date">
+  	<time datetime="2016-05-16T06:51:20.000Z" itemprop="datePublished"><i class="icon-clock"></i>May 16 2016</time>
+</a>
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags"></i>
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/js/">js</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/拷贝/">拷贝</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<i class="icon-price-tags"></i>
+	<a class="article-category-link" href="/categories/前端技术/">前端技术</a>
+	</div>
+
+
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+  
+<nav id="article-nav">
+  
+    <a href="/2016/06/13/移动端字体一些小坑/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          移动端字体一些小坑
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/05/11/js中的delete/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">js中的delete</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+
+
+<div class="share_jia">
+	<!-- JiaThis Button BEGIN -->
+	<div class="jiathis_style">
+		<span class="jiathis_txt">Share to: &nbsp; </span>
+		<a class="jiathis_button_facebook"></a> 
+	    <a class="jiathis_button_twitter"></a>
+	    <a class="jiathis_button_plus"></a> 
+	    <a class="jiathis_button_tsina"></a>
+		<a class="jiathis_button_cqq"></a>
+		<a class="jiathis_button_douban"></a>
+		<a class="jiathis_button_weixin"></a>
+		<a class="jiathis_button_tumblr"></a>
+    <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	</div>
+	<script type="text/javascript" src="//v3.jiathis.com/code/jia.js?uid=1405949716054953" charset="utf-8"></script>
+	<!-- JiaThis Button END -->
+</div>
+
+
+
+
+
+
+
+
+
+      </div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2019 PerezYuan
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    <script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: false,
+		animate: true,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: false,
+		root: "/",
+		innerArchive: true
+	}
+</script>
+
+<script src="/./main.js"></script>
+
+
+    
+<div class="tools-col">
+  <ul class="btn-wrap">
+    
+      <li class="chose" data-hook="tools-section-all"><span class="text">全部</span><i class="icon-book"></i></li>
+    
+    
+      <li data-hook="tools-section-tag"><span class="text">标签</span><i class="icon-price-tags"></i></li>
+    
+    
+      <li data-hook="tools-section-friends"><span class="text">友链</span><i class="icon-link"></i></li>
+    
+    
+      <li data-hook="tools-section-me"><span class="text">我</span><i class="icon-smile"></i></li>
+    
+  </ul>
+  <div class="tools-wrap">
+    
+    	<section class="tools-section tools-section-all chose">
+    	</section>
+    
+
+    
+    	<section class="tools-section tools-section-tag">
+    			<div class="widget tagcloud" id="js-tagcloud">
+    				<a href="/tags/CSS/" style="font-size: 13.33px;">CSS</a> <a href="/tags/ajax/" style="font-size: 10px;">ajax</a> <a href="/tags/delete/" style="font-size: 10px;">delete</a> <a href="/tags/es6/" style="font-size: 10px;">es6</a> <a href="/tags/express/" style="font-size: 10px;">express</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/http/" style="font-size: 16.67px;">http</a> <a href="/tags/js/" style="font-size: 20px;">js</a> <a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/node-js/" style="font-size: 10px;">node.js</a> <a href="/tags/this/" style="font-size: 13.33px;">this</a> <a href="/tags/vue/" style="font-size: 10px;">vue</a> <a href="/tags/云存储/" style="font-size: 10px;">云存储</a> <a href="/tags/拷贝/" style="font-size: 10px;">拷贝</a> <a href="/tags/构建工具/" style="font-size: 10px;">构建工具</a> <a href="/tags/移动端/" style="font-size: 13.33px;">移动端</a>
+    			</div>
+    	</section>
+    
+
+    
+    	<section class="tools-section tools-section-friends">
+  		
+  			<div class="friends-wrap" id="js-friends">
+  			
+  	          <a target="_blank" class="main-nav-link switch-friends-link" href="http://butsalt.me/">butsalt</a>
+  	        
+  	          <a target="_blank" class="main-nav-link switch-friends-link" href="https://github.com/amnhh/amnhh.github.io/issues">amnhh</a>
+  	        
+  	        </div>
+  		
+    	</section>
+    
+
+    
+    	<section class="tools-section tools-section-me">
+  	  	
+  	  		<div class="aboutme-wrap" id="js-aboutme">热爱前端&lt;br&gt;&lt;br&gt;热爱绘画</div>
+  	  	
+    	</section>
+    
+  </div>
+  
+</div>
+    <!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+  </div>
+</body>
+</html>

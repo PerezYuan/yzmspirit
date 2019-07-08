@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="dns-prefetch" href="http://blog.fens.me">
+  <title>英文单词 &amp; CJK类文本换行问题 | Spirit</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="在前端开发中，提到英文单词换行首先肯定是想到文本超过了其容器导致的自动换行，以及相关处理的word-break和word-wrap属性，现在对CSS中的换行方法进行一个简单的整理和总结。">
+<meta name="keywords" content="CSS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="英文单词 &amp; CJK类文本换行问题">
+<meta property="og:url" content="http://blog.fens.me/2016/07/04/英文单词 & CJK类文本换行问题/index.html">
+<meta property="og:site_name" content="Spirit">
+<meta property="og:description" content="在前端开发中，提到英文单词换行首先肯定是想到文本超过了其容器导致的自动换行，以及相关处理的word-break和word-wrap属性，现在对CSS中的换行方法进行一个简单的整理和总结。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://blog.fens.me/img/20160704165831.jpg">
+<meta property="og:image" content="http://blog.fens.me/img/20160704173446.jpg">
+<meta property="og:image" content="http://blog.fens.me/img/20160704174433.jpg">
+<meta property="og:image" content="http://blog.fens.me/img/20160705160822.jpg">
+<meta property="og:image" content="http://blog.fens.me/img/20160705162435.jpg">
+<meta property="og:updated_time" content="2019-07-07T13:07:25.205Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="英文单词 &amp; CJK类文本换行问题">
+<meta name="twitter:description" content="在前端开发中，提到英文单词换行首先肯定是想到文本超过了其容器导致的自动换行，以及相关处理的word-break和word-wrap属性，现在对CSS中的换行方法进行一个简单的整理和总结。">
+<meta name="twitter:image" content="http://blog.fens.me/img/20160704165831.jpg">
+  
+    <link rel="alternative" href="/atom.xml" title="Spirit" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="stylesheet" href="/main.css">
+  
+
+</head>
+</html>
+<body>
+  <div id="container">
+    <div class="left-col">
+      <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img src="/author.jpg" class="js-avatar">
+			
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">PerezYuan</a></h1>
+		</hgroup>
+
+		
+		<p class="header-subtitle">元気を出して大いにやる</p>
+		
+
+		<nav class="header-menu">
+			<ul>
+			
+				<li><a href="http://www.yzmspirit.com/">主页</a></li>
+	        
+			</ul>
+		</nav>
+		<nav class="header-smart-menu">
+	        
+    		
+    			
+    			<a class="js-smart-menu" data-idx="0" href="javascript:void(0)">所有文章</a>
+    			
+    			
+            
+    			
+    			<a class="js-smart-menu" data-idx="1" href="javascript:void(0)">标签</a>
+    			
+    			
+            
+    			
+    			<a class="js-smart-menu" data-idx="2" href="javascript:void(0)">友链</a>
+    			
+    			
+            
+    			
+    			<a class="js-smart-menu" data-idx="3" href="javascript:void(0)">关于我</a>
+    			
+    			
+            
+		</nav>
+		<nav class="header-nav">
+			<div class="social">
+				
+					<a class="github" target="_blank" href="https://github.com/PerezYuan" title="github">github</a>
+		        
+					<a class="weibo" target="_blank" href="http://weibo.com/u/2193947000" title="weibo">weibo</a>
+		        
+			</div>
+		</nav>
+	</header>		
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"><i class="icon-list"></i></div>
+  		<h1 class="header-author js-mobile-header hide">PerezYuan</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+				
+					<img src="/author.jpg" class="js-avatar">
+				
+			</div>
+			<hgroup>
+			  <h1 class="header-author">PerezYuan</h1>
+			</hgroup>
+			
+			<p class="header-subtitle">元気を出して大いにやる</p>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="http://www.yzmspirit.com/">主页</a></li>
+		        
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/PerezYuan" title="github">github</a>
+			        
+						<a class="weibo" target="_blank" href="http://weibo.com/u/2193947000" title="weibo">weibo</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+
+      <div class="body-wrap">
+        <article id="post-英文单词 &amp; CJK类文本换行问题" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      英文单词 &amp; CJK类文本换行问题
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在前端开发中，提到英文单词换行首先肯定是想到文本超过了其容器导致的自动换行，以及相关处理的word-break和word-wrap属性，现在对CSS中的换行方法进行一个简单的整理和总结。</p>
+<a id="more"></a>
+<h1 id="一-word-break"><a href="#一-word-break" class="headerlink" title="一.word-break"></a>一.word-break</h1><p>单独使用word-break能解决近乎所有的单词换行问题。<code>word-break</code>有三个属性</p>
+<h2 id="1-word-break-normal"><a href="#1-word-break-normal" class="headerlink" title="1. word-break:normal"></a>1. word-break:normal</h2><p>使用浏览器默认的换行处理方法，这回导致很多问题。在英文段落中入如果遇到较长的单词，它的长度超出容器宽度，浏览器就会自动将这个单词移到下一行，途中的China就被换行了。其次，当某个单词本身的长度超过了容器的宽度，容器对单词的约束力就没有了，最终导致了图中的dddd…被当做了一个单词，溢出了容器。</p>
+<p><img src="/img/20160704165831.jpg" alt="Font Boosting"></p>
+<h2 id="2-word-break-break-all"><a href="#2-word-break-break-all" class="headerlink" title="2. word-break:break-all"></a>2. word-break:break-all</h2><p>于是我们机智的采用了<code>word-break:break-all</code>来处理这种情况，以保证在某些不合法英文长串所引起的页面变形。但是这样会导致原本合理的英文串变成了我们不想要看到的换行样子，如图中的China的n和a被分开了。</p>
+<p><img src="/img/20160704173446.jpg" alt="Font Boosting"></p>
+<h2 id="3-word-break-keep-all"><a href="#3-word-break-keep-all" class="headerlink" title="3. word-break:keep-all"></a>3. word-break:keep-all</h2><p>绝大多数情况下，我们不会用到keep-all，这个只对我们的CJK类语言起作用，CJK类语言是中日韩统一表意文字<a href="https://zh.wikipedia.org/wiki/%E4%B8%AD%E6%97%A5%E9%9F%93%E7%B5%B1%E4%B8%80%E8%A1%A8%E6%84%8F%E6%96%87%E5%AD%97" title="中日韩统一表意文字" target="_blank" rel="noopener">（维基百科）</a>，它会让CJK类语言不换行，但不会影响到其他的文本。</p>
+<p><img src="/img/20160704174433.jpg" alt="Font Boosting"></p>
+<p><a href="http://www.yzmspirit.com/code/word-break.html" target="_blank" rel="noopener">（运行Demo）</a></p>
+<h1 id="二-word-wrap"><a href="#二-word-wrap" class="headerlink" title="二.word-wrap"></a>二.word-wrap</h1><p>要解决上述第二点中将本来单词给打断的问题，CSS3引入了一个新的属性<code>word-wrap</code>，这个值的取值也很简单，只有normal | break-word，它会将长单词或 URL 地址换行到下一行。一般情况下，我们只需要在单词本身长度超过容器宽度的时候，对其进行换行处理，所以在网页设计中，只使用一个<code>word-wrap:brak-word</code>就能够满足网页上最基本的排版了。</p>
+<p><img src="/img/20160705160822.jpg" alt="Font Boosting"></p>
+<p><a href="http://www.yzmspirit.com/code/word-wrap.html" target="_blank" rel="noopener">（运行Demo）</a></p>
+<h1 id="三-hyphens"><a href="#三-hyphens" class="headerlink" title="三.hyphens"></a>三.hyphens</h1><p>人总是不满足的，为什么我们的网页不能像一些书本一样，再遇到单词换行的时候，给没写完的单词加上一个’-‘呢？其实是由解决方案的，那就是CSS3的属性<code>hyphens</code>。<code>hyphens</code><strong>在目前的情况下被支持还是很有限的，我们伟大的Chrome就不支持这个属性，所以我们在使用它的时候要格外小心</strong>。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">-webkit-hyphens</span>: <span class="selector-tag">auto</span>;</span><br><span class="line"><span class="selector-tag">-moz-hyphens</span>: <span class="selector-tag">auto</span>;</span><br><span class="line"><span class="selector-tag">-ms-hyphens</span>: <span class="selector-tag">auto</span>;</span><br><span class="line"><span class="selector-tag">hyphens</span>: <span class="selector-tag">auto</span>;</span><br></pre></td></tr></table></figure>
+<p>文档的编码也必须是能支持<code>hyphens</code>的语种</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">html</span> <span class="attr">lang</span>=<span class="string">"en"</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><img src="/img/20160705162435.jpg" alt="Font Boosting"></p>
+<p><a href="http://www.yzmspirit.com/code/hyphens.html" target="_blank" rel="noopener">（运行Demo）</a></p>
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      <a href="/2016/07/04/英文单词 & CJK类文本换行问题/" class="archive-article-date">
+  	<time datetime="2016-07-04T08:36:23.000Z" itemprop="datePublished"><i class="icon-clock"></i>Jul 4 2016</time>
+</a>
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags"></i>
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/CSS/">CSS</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<i class="icon-price-tags"></i>
+	<a class="article-category-link" href="/categories/前端技术/">前端技术</a>
+	</div>
+
+
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+  
+<nav id="article-nav">
+  
+    <a href="/2016/07/27/能力和团队/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          能力和团队
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/06/13/移动端字体一些小坑/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">移动端字体一些小坑</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+
+
+<div class="share_jia">
+	<!-- JiaThis Button BEGIN -->
+	<div class="jiathis_style">
+		<span class="jiathis_txt">Share to: &nbsp; </span>
+		<a class="jiathis_button_facebook"></a> 
+	    <a class="jiathis_button_twitter"></a>
+	    <a class="jiathis_button_plus"></a> 
+	    <a class="jiathis_button_tsina"></a>
+		<a class="jiathis_button_cqq"></a>
+		<a class="jiathis_button_douban"></a>
+		<a class="jiathis_button_weixin"></a>
+		<a class="jiathis_button_tumblr"></a>
+    <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	</div>
+	<script type="text/javascript" src="//v3.jiathis.com/code/jia.js?uid=1405949716054953" charset="utf-8"></script>
+	<!-- JiaThis Button END -->
+</div>
+
+
+
+
+
+
+
+
+
+      </div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2019 PerezYuan
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    <script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: false,
+		animate: true,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: false,
+		root: "/",
+		innerArchive: true
+	}
+</script>
+
+<script src="/./main.js"></script>
+
+
+    
+<div class="tools-col">
+  <ul class="btn-wrap">
+    
+      <li class="chose" data-hook="tools-section-all"><span class="text">全部</span><i class="icon-book"></i></li>
+    
+    
+      <li data-hook="tools-section-tag"><span class="text">标签</span><i class="icon-price-tags"></i></li>
+    
+    
+      <li data-hook="tools-section-friends"><span class="text">友链</span><i class="icon-link"></i></li>
+    
+    
+      <li data-hook="tools-section-me"><span class="text">我</span><i class="icon-smile"></i></li>
+    
+  </ul>
+  <div class="tools-wrap">
+    
+    	<section class="tools-section tools-section-all chose">
+    	</section>
+    
+
+    
+    	<section class="tools-section tools-section-tag">
+    			<div class="widget tagcloud" id="js-tagcloud">
+    				<a href="/tags/CSS/" style="font-size: 13.33px;">CSS</a> <a href="/tags/ajax/" style="font-size: 10px;">ajax</a> <a href="/tags/delete/" style="font-size: 10px;">delete</a> <a href="/tags/es6/" style="font-size: 10px;">es6</a> <a href="/tags/express/" style="font-size: 10px;">express</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/http/" style="font-size: 16.67px;">http</a> <a href="/tags/js/" style="font-size: 20px;">js</a> <a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/node-js/" style="font-size: 10px;">node.js</a> <a href="/tags/this/" style="font-size: 13.33px;">this</a> <a href="/tags/vue/" style="font-size: 10px;">vue</a> <a href="/tags/云存储/" style="font-size: 10px;">云存储</a> <a href="/tags/拷贝/" style="font-size: 10px;">拷贝</a> <a href="/tags/构建工具/" style="font-size: 10px;">构建工具</a> <a href="/tags/移动端/" style="font-size: 13.33px;">移动端</a>
+    			</div>
+    	</section>
+    
+
+    
+    	<section class="tools-section tools-section-friends">
+  		
+  			<div class="friends-wrap" id="js-friends">
+  			
+  	          <a target="_blank" class="main-nav-link switch-friends-link" href="http://butsalt.me/">butsalt</a>
+  	        
+  	          <a target="_blank" class="main-nav-link switch-friends-link" href="https://github.com/amnhh/amnhh.github.io/issues">amnhh</a>
+  	        
+  	        </div>
+  		
+    	</section>
+    
+
+    
+    	<section class="tools-section tools-section-me">
+  	  	
+  	  		<div class="aboutme-wrap" id="js-aboutme">热爱前端&lt;br&gt;&lt;br&gt;热爱绘画</div>
+  	  	
+    	</section>
+    
+  </div>
+  
+</div>
+    <!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+  </div>
+</body>
+</html>
