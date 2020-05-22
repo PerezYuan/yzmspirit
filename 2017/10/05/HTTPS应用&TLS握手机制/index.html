@@ -12,19 +12,19 @@
 <meta name="keywords" content="http">
 <meta property="og:type" content="article">
 <meta property="og:title" content="HTTPS应用&amp;TLS握手机制">
-<meta property="og:url" content="http://blog.fens.me/2019/07/08/HTTPS应用&TLS握手机制/index.html">
+<meta property="og:url" content="http://blog.fens.me/2017/10/05/HTTPS应用&TLS握手机制/index.html">
 <meta property="og:site_name" content="Spirit">
 <meta property="og:description" content="HTTPS，顾名思义，就是HTTP+S，而这个S是什么呢，它在HTTP的基础上有了什么变化，为什么需要HTTPS呢，就是本篇要讨论的东西了">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://tinashy-1256534403.cos.ap-chengdu.myqcloud.com/TLS%3ASSL%E6%89%80%E5%9C%A8%E7%9A%84%E5%8D%8F%E8%AE%AE%E5%B1%82.png">
-<meta property="og:image" content="https://tinashy-1256534403.cos.ap-chengdu.myqcloud.com/TLS%E7%9A%84%E5%B7%A5%E4%BD%9C%E6%9C%BA%E5%88%B6.png">
-<meta property="og:image" content="https://tinashy-1256534403.cos.ap-chengdu.myqcloud.com/%E6%95%B0%E5%AD%97%E7%AD%BE%E5%90%8D.png">
-<meta property="og:image" content="https://tinashy-1256534403.cos.ap-chengdu.myqcloud.com/%E6%95%B0%E5%AD%97%E8%AF%81%E4%B9%A6.png">
-<meta property="og:updated_time" content="2019-07-08T03:19:24.926Z">
+<meta property="og:image" content="http://blog.fens.me/img/TLS_SSL所在的协议层.png">
+<meta property="og:image" content="http://blog.fens.me/img/TLS的工作机制.png">
+<meta property="og:image" content="http://blog.fens.me/img/数字签名.png">
+<meta property="og:image" content="http://blog.fens.me/img/数字证书.png">
+<meta property="og:updated_time" content="2020-05-22T08:25:23.429Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="HTTPS应用&amp;TLS握手机制">
 <meta name="twitter:description" content="HTTPS，顾名思义，就是HTTP+S，而这个S是什么呢，它在HTTP的基础上有了什么变化，为什么需要HTTPS呢，就是本篇要讨论的东西了">
-<meta name="twitter:image" content="https://tinashy-1256534403.cos.ap-chengdu.myqcloud.com/TLS%3ASSL%E6%89%80%E5%9C%A8%E7%9A%84%E5%8D%8F%E8%AE%AE%E5%B1%82.png">
+<meta name="twitter:image" content="http://blog.fens.me/img/TLS_SSL所在的协议层.png">
   
     <link rel="alternative" href="/atom.xml" title="Spirit" type="application/atom+xml">
   
@@ -170,54 +170,40 @@
 <li>在TCP/IP五层网络模型中，相当于在传输层和应用层之间加入了一层  </li>
 <li>在ISO七层网络模型中，相当于表示层，在服务器和客户端之间协商一层数据密文传输和解析的方式</li>
 </ul>
-<p><img src="https://tinashy-1256534403.cos.ap-chengdu.myqcloud.com/TLS%3ASSL%E6%89%80%E5%9C%A8%E7%9A%84%E5%8D%8F%E8%AE%AE%E5%B1%82.png" alt="TLS工作的协议层"></p>
+<img src="/img/TLS_SSL所在的协议层.png" width="1332" height="948" title="TLS_SSL所在的协议层">
 <h4 id="二、TLS层的作用"><a href="#二、TLS层的作用" class="headerlink" title="二、TLS层的作用"></a>二、TLS层的作用</h4><p>TLS层主要解决两个问题：</p>
 <ul>
 <li>验证服务器的身份：服务器通过TLS层向客户端传递<a href="#da">数字证书</a>（点击可以查看介绍），客户端查验证书，可以知道与它通讯的服务器是不是别人冒充的。</li>
 <li>保证传递信息的保密性：双方通过TLS层，约定对称加密算法和密钥，传输层传输的是密文，可以防止信息被中途窃听。</li>
 </ul>
 <h4 id="三、TLS的工作原理"><a href="#三、TLS的工作原理" class="headerlink" title="三、TLS的工作原理"></a>三、TLS的工作原理</h4><p>为了解决以上问题，TLS的工作过程可以分为两个阶段：</p>
-<ul>
-<li><p>服务端客户端say hello的阶段 – 验证服务器的身份</p>
-<ol>
-<li><p>client向server发出建立连接的请求（<a href="http://www.yzmspirit.com）,并一同发送一个client产生的随机数A，用于后面产生密钥的参数，以及client支持的散列算法和对称加密算法" target="_blank" rel="noopener">www.yzmspirit.com）,并一同发送一个client产生的随机数A，用于后面产生密钥的参数，以及client支持的散列算法和对称加密算法</a></p>
-</li>
-<li><p>server收到连接请求后，也产生一个随机数B，发送给client，并选择一对server也支持的散列算法和对称加密算法，一起告知client</p>
-</li>
-<li><p>server发送通过CA申请的证书给client，client验证证书的真实性，包括  </p>
-<ul>
-<li>通过证书的CA数字签名检查证书信息有没有被篡改或者替换</li>
-<li>证书是否在有效期内</li>
-<li>证书的申请者信息和domain域是否和server匹配  </li>
-</ul>
-<pre style="color: #fff">验证通过，说明server身份真实，可以建立连接
-验证不通过，将不会继续接下来的工作，通过消息提示等告知用户server的身份很可疑</pre>
-</li>
-<li><p>证书验证通过后，server通知客户端server_hello信息，表示hello阶段结束</p>
-</li>
-</ol>
-</li>
-</ul>
-<p>至此，验证服务器身份的阶段完成了，接下来可以交流深层次的东西了，那当然就是密钥啦</p>
-<ul>
-<li><p>产生密钥，交换密钥和验证密钥的阶段  –  传递信息的保密性</p>
-<ol>
-<li><p>server的证书里包含了server非对称加密密钥里的公钥，（常用的就是RSA非对称加密算法）client再次生成一个产生密钥的参数，就是随机数C，用公钥加密后，传递给server，server收到后用自己的私钥解密就得到了随机数C，这就保证了密钥参数里有一个的传递是保密的，不被窃听的，至于非对称加密怎么保证数据的安全性，文后的<a href="#sa">加密算法</a>有介绍  </p>
-</li>
-<li><p>client通知server接下来交互的信息就要用约定的散列算法和加密算法处理信息了</p>
-</li>
-<li><p>client用随机数A,B,C作为参数，用hello阶段与server约定好的加密算法的密钥生成方法，产生对称密钥Secret_key<br>，再用上述产生的所有参数和一些信息用约定的散列算法生成摘要H1，用密钥Secret_key加密H1后，发送给server，server用同样的方式生成对称密钥和摘要H2，解密收到的加密摘要H1，与H2对比，如果相等，说明生成的密钥可以正常使用，在加密传输的情况下，client发送正常，server接受正常</p>
-</li>
-<li><p>server也回复client，接下来交互的信息就要用约定的散列算法和加密算法处理信息了</p>
-</li>
-<li><p>server再次用上述产生的所有参数和一些信息用约定的散列算法生成摘要H3，用对称密钥加密H3后，发送给client，client用同样的方式验证，验证通过证明在加密传输的情况下，server发送正常，client也接受正常</p>
-</li>
-</ol>
-</li>
-</ul>
-<p>至此，产生密钥，交换密钥和验证密钥的阶段的阶段也完成了，TLS的握手工作也就完成了  </p>
-<p>接下来，当然就是server和client通过对称密钥愉快而又隐私的通信了</p>
-<p><img src="https://tinashy-1256534403.cos.ap-chengdu.myqcloud.com/TLS%E7%9A%84%E5%B7%A5%E4%BD%9C%E6%9C%BA%E5%88%B6.png" alt="TLS握手机制图解"></p>
+<p>1.服务端客户端say hello的阶段 – 验证服务器的身份</p>
+<pre><code>1.client向server发出建立连接的请求（www.yzmspirit.com）, 并一同发送一个client产生的随机数A，用于后面产生密钥的参数，以及client支持的散列算法和对称加密算法
+
+2.server收到连接请求后，也产生一个随机数B，发送给client，并选择一对server也支持的散列算法和对称加密算法，一起告知client
+
+3.server发送通过CA申请的证书给client，client验证证书的真实性，包括:
+- 通过证书的CA数字签名检查证书信息有没有被篡改或者替换
+- 证书是否在有效期内
+- 证书的申请者信息和domain域是否和server匹配  
+    a.验证通过，说明server身份真实，可以建立连接
+    b.验证不通过，将不会继续接下来的工作，通过消息提示等告知用户server的身份很可疑    
+
+4.证书验证通过后，server通知客户端server_hello信息，表示hello阶段结束
+</code></pre><p>至此，验证服务器身份的阶段完成了，接下来可以交流深层次的东西了 – 密钥</p>
+<p>2.产生密钥，交换密钥和验证密钥的阶段  –  传递信息的保密性</p>
+<pre><code>1. server的证书里包含了server非对称加密密钥里的公钥，（常用的就是RSA非对称加密算法）client再次生成一个产生密钥的参数，就是随机数C，用公钥加密后，传递给server，server收到后用自己的私钥解密就得到了随机数C，这就保证了密钥参数里有一个的传递是保密的，不被窃听的，至于非对称加密怎么保证数据的安全性，文后的加密算法有介绍  
+
+2. client通知server接下来交互的信息就要用约定的散列算法和加密算法处理信息了
+
+3. client用随机数A,B,C作为参数，用hello阶段与server约定好的加密算法的密钥生成方法，产生对称密钥Secret_key，再用上述产生的所有参数和一些信息用约定的散列算法生成摘要H1，用密钥Secret_key加密H1后，发送给server，server用同样的方式生成对称密钥和摘要H2，解密收到的加密摘要H1，与H2对比，如果相等，说明生成的密钥可以正常使用，在加密传输的情况下，client发送正常，server接受正常
+
+4. server也回复client，接下来交互的信息就要用约定的散列算法和加密算法处理信息了
+
+5. server再次用上述产生的所有参数和一些信息用约定的散列算法生成摘要H3，用对称密钥加密H3后，发送给client，client用同样的方式验证，验证通过证明在加密传输的情况下，server发送正常，client也接受正常
+</code></pre><p>至此，产生密钥，交换密钥和验证密钥的阶段的阶段也完成了，TLS的握手工作也就完成了  </p>
+<p>接下来，当然就是server和client通过对称密钥愉快而又隐私的通信：</p>
+<img src="/img/TLS的工作机制.png" width="1550" height="1070" title="TLS的工作机制">
 <blockquote>
 <p>HTTP和TLS是怎么配合工作的呢？</p>
 </blockquote>
@@ -240,28 +226,21 @@
 <li><p>数字签名的作用<br>&ensp;&ensp;验证发送的信息中涂没有被篡改过，注意：信息没有加密，并不保证信息保密信息，如果信息需要保密，可以再全部加密后发送</p>
 </li>
 <li><p>数字签名的工作过程</p>
+  <img src="/img/数字签名.png" title="1614 640 数字签名">
+<p> 1.摘要（单向散列函数获取消息的散列值）和消息，一起用接收者的公钥加密后，发送<br> 2.接收者用自己的私钥解密，计算消息的摘要（用同样的单向散列函数），和正文消息比对有无被篡改</p>
 </li>
 </ul>
-<p><img src="https://tinashy-1256534403.cos.ap-chengdu.myqcloud.com/%E6%95%B0%E5%AD%97%E7%AD%BE%E5%90%8D.png" alt="数字签名的工作图解"></p>
-<ol>
-<li>摘要（单向散列函数获取消息的散列值）和消息，一起用接收者的公钥加密后，发送</li>
-<li>接收者用自己的私钥解密，计算消息的摘要（用同样的单向散列函数），和正文消息比对有无被篡改</li>
-</ol>
 <p><span id="da"></span> </p>
 <h3 id="2-数字证书"><a href="#2-数字证书" class="headerlink" title="2. 数字证书"></a>2. 数字证书</h3><p>&ensp;&ensp;要了解数字证书，首先得了解<a href="#ds">数字签名</a></p>
-<ul>
-<li><p>数字证书的作用<br>&ensp;&ensp;验证发送者的身份和发送者的公钥可靠性</p>
-</li>
-<li><p>数字证书的工作过程</p>
-</li>
-</ul>
-<p><img src="https://tinashy-1256534403.cos.ap-chengdu.myqcloud.com/%E6%95%B0%E5%AD%97%E8%AF%81%E4%B9%A6.png" alt="数字证书的工作图解"></p>
-<ol>
-<li>申请者把公钥和申请信息一起发送给CA</li>
-<li>CA验证申请信息后提取申请者公钥和信息的摘要，用私钥加密摘要，形成CA的数字签名附在申请者公钥和信息的后面，就产生了数字证书，返回给申请者</li>
-<li>申请者用CA的公钥解密数字证书，用同样的方式摘要信息，和解密信息对比，无误后此证书可用</li>
-<li>申请者发送信息时，把数字证书附在后面一起发送给对方，对方利用缓存的CA根证书找到解密这个证书的数字签名，验证成功后得到发送者的公钥和申请信息，浏览器检查申请信息公司名字正常也没过期没问题，那么就证实了发送者的公钥没有问题，确实是可用的公钥，你用公钥解密对方的信息，成功解密就说明对方的身份正常，你就可以与他交互了，其实就是认证文件和公钥确实出于对方</li>
-</ol>
+<blockquote>
+<p>数字证书的作用  </p>
+</blockquote>
+<p>验证发送者的身份和发送者的公钥可靠性</p>
+<blockquote>
+<p>数字证书的工作过程</p>
+</blockquote>
+ <img src="/img/数字证书.png" title="1626 1222 数字证书">
+<p> 1.申请者把公钥和申请信息一起发送给CA<br> 2.CA验证申请信息后提取申请者公钥和信息的摘要，用私钥加密摘要，形成CA的数字签名附在申请者公钥和信息的后面，就产生了数字证书，返回给申请者<br> 3.申请者用CA的公钥解密数字证书，用同样的方式摘要信息，和解密信息对比，无误后此证书可用<br> 4.申请者发送信息时，把数字证书附在后面一起发送给对方，对方利用缓存的CA根证书找到解密这个证书的数字签名，验证成功后得到发送者的公钥和申请信息，浏览器检查申请信息公司名字正常也没过期没问题，那么就证实了发送者的公钥没有问题，确实是可用的公钥，你用公钥解密对方的信息，成功解密就说明对方的身份正常，你就可以与他交互了，其实就是认证文件和公钥确实出于对方</p>
 <p><span id="sa"></span></p>
 <h3 id="3-加密算法"><a href="#3-加密算法" class="headerlink" title="3. 加密算法"></a>3. 加密算法</h3><ul>
 <li><p>非对称加密RSA  </p>
@@ -341,10 +320,7 @@ client确认server对client的话说完了，允许server关闭，双方都关�
 </ul>
 <p>FIN=1代表请求关闭连接，ACK代表确认收到的数据包序号+1  </p>
 <p>至此，四次挥手才是双方都关闭了连接</p>
-<blockquote>
-<p>参考 </p>
-</blockquote>
-<p><a href="https://www.cnblogs.com/huanxiyun/articles/6554085.html" target="_blank" rel="noopener">HTTPS协议详解(四)：TLS/SSL握手过程</a></p>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p><a href="https://www.cnblogs.com/huanxiyun/articles/6554085.html" target="_blank" rel="noopener">HTTPS协议详解(四)：TLS/SSL握手过程</a></p>
 <p><a href="http://www.sohu.com/a/253770353_608959" target="_blank" rel="noopener">通俗理解数字签名，数字证书和https</a></p>
 <p><a href="https://www.jianshu.com/p/fbb8bf7baa97" target="_blank" rel="noopener">一文搞懂 RSA 算法</a></p>
 <p><a href="https://blog.csdn.net/striner/article/details/85107921" target="_blank" rel="noopener">十分钟读懂AES加密算法</a></p>
@@ -355,8 +331,8 @@ client确认server对client的话说完了，允许server关闭，双方都关�
     </div>
     <div class="article-info article-info-index">
       
-      <a href="/2019/07/08/HTTPS应用&TLS握手机制/" class="archive-article-date">
-  	<time datetime="2019-07-08T02:44:30.000Z" itemprop="datePublished"><i class="icon-clock"></i>Jul 8 2019</time>
+      <a href="/2017/10/05/HTTPS应用&TLS握手机制/" class="archive-article-date">
+  	<time datetime="2017-10-05T02:44:30.000Z" itemprop="datePublished"><i class="icon-clock"></i>Oct 5 2017</time>
 </a>
       
 	<div class="article-tag tagcloud">
@@ -421,7 +397,7 @@ client确认server对client的话说完了，允许server关闭，双方都关�
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2019 PerezYuan
+    		&copy; 2020 PerezYuan
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
