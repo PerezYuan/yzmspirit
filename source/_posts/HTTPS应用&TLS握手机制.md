@@ -1,6 +1,6 @@
 ---
 title: HTTPS应用&TLS握手机制
-date: 2019-7-8 10:44:30
+date: 2017-10-5 10:44:30
 tags:
 - http
 categories: 前端技术
@@ -22,7 +22,7 @@ S是指TLS安全协议，是在安全套接字SSL协议的基础上发展而来�
 * 在TCP/IP五层网络模型中，相当于在传输层和应用层之间加入了一层  
 * 在ISO七层网络模型中，相当于表示层，在服务器和客户端之间协商一层数据密文传输和解析的方式
 
-![TLS工作的协议层](https://tinashy-1256534403.cos.ap-chengdu.myqcloud.com/TLS%3ASSL%E6%89%80%E5%9C%A8%E7%9A%84%E5%8D%8F%E8%AE%AE%E5%B1%82.png)
+{% img /img/TLS_SSL所在的协议层.png 1332 948 TLS_SSL所在的协议层 %}
 
 #### 二、TLS层的作用
 TLS层主要解决两个问题：
